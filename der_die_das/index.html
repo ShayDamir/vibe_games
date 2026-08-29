@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Der Die Das — Gender Shooter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- three.js world -->
+  <div id="scene"></div>
+  <div id="damage"></div>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="hud-group">
+      <div class="stat" id="stat-round">ROUND 1</div>
+      <div class="stat">
+        <span id="progress-txt">WORD 0/20</span>
+        <div class="bar"><i id="progress-fill"></i></div>
+      </div>
+      <div class="stat" id="stat-speed">SPEED ×1x</div>
+    </div>
+    <div class="hud-group">
+      <div class="stat" id="stat-coins"><span class="coin"></span><span id="coin-val">0</span></div>
+      <div class="stat off" id="stat-streak">STREAK <span class="val" id="streak-val">&times;0</span></div>
+      <button id="btn-pause" title="Pause (Space)">❚❚</button>
+    </div>
+  </div>
+
+  <!-- pause banner -->
+  <div id="pause-banner" class="hidden">
+    <span class="pb-ico">❚❚</span> PAUSED — press <kbd>SPACE</kbd> or the button to resume
+  </div>
+
+  <!-- touch / click guns -->
+  <div id="guns" class="hidden">
+    <button class="gun gun-der" data-g="der"><span class="key">1</span>DER</button>
+    <button class="gun gun-die" data-g="die"><span class="key">2</span>DIE</button>
+    <button class="gun gun-das" data-g="das"><span class="key">3</span>DAS</button>
+  </div>
+
+  <!-- per-word reveal popup -->
+  <div id="reveal" class="hidden"></div>
+  <div id="toasts"></div>
+
+  <!-- round intro flash -->
+  <div id="intro" class="hidden">
+    <div class="in-round" id="intro-round">ROUND 1</div>
+    <div class="in-sub" id="intro-sub"></div>
+  </div>
+
+  <!-- MENU -->
+  <div id="overlay-menu" class="overlay">
+    <div class="panel">
+      <h1 class="logo"><span class="l-der">DER</span><span class="dot">&middot;</span><span class="l-die">DIE</span><span class="dot">&middot;</span><span class="l-das">DAS</span></h1>
+      <p class="tag">The German Gender Shooter</p>
+      <ul class="howto">
+        <li><span class="ico">01</span><span>Words fly at you. Shoot the matching gender before the word slips past: <kbd>1</kbd> <b class="c-der">DER</b> (blue), <kbd>2</kbd> <b class="c-die">DIE</b> (pink), <kbd>3</kbd> <b class="c-das">DAS</b> (yellow) — or tap the gun pads.</span></li>
+        <li><span class="ico">02</span><span>Correct shot = 1 coin + streak bonus. Every 5-streak raises the bonus <i>and</i> the speed — words fly in faster. Wrong gender = streak (and speed) lost. Letting a word fly past costs nothing.</span></li>
+        <li><span class="ico">03</span><span>After every word you see its translation and the gender rule behind it. Press <kbd>SPACE</kbd> or ❚❚ any time to pause and read it slowly. Red chips are exceptions — memorize those!</span></li>
+        <li><span class="ico">04</span><span>Between rounds, spend coins in the Rule Shop to unlock new rules — each one adds new words to the pool. The shop offers up to 2 fresh rules per gender, picked at random.</span></li>
+      </ul>
+      <div class="menu-stats" id="menu-stats"></div>
+      <div class="mt">
+        <button id="btn-play" class="btn primary">PLAY</button>
+      </div>
+      <button id="btn-reset" class="btn ghost" style="margin-top:14px">Reset progress</button>
+    </div>
+  </div>
+
+  <!-- ROUND END -->
+  <div id="overlay-roundend" class="overlay hidden">
+    <div class="panel">
+      <p class="rule-head">ROUND COMPLETE</p>
+      <h2 class="panel-title" id="re-title">Round 1</h2>
+      <div class="re-stats">
+        <div class="re-cell"><div class="lbl">CORRECT</div><div class="val ok" id="re-correct">0</div></div>
+        <div class="re-cell"><div class="lbl">WRONG</div><div class="val bad" id="re-wrong">0</div></div>
+        <div class="re-cell"><div class="lbl">MISSED</div><div class="val miss" id="re-missed">0</div></div>
+        <div class="re-cell"><div class="lbl">BEST STREAK</div><div class="val gold" id="re-streak">&times;0</div></div>
+      </div>
+      <div class="re-coins" id="re-coins">+0 coins</div>
+      <div class="btn-row">
+        <button id="btn-shop" class="btn">RULE SHOP</button>
+        <button id="btn-next" class="btn primary">NEXT ROUND</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOP -->
+  <div id="overlay-shop" class="overlay hidden">
+    <div class="panel shop-panel">
+      <div id="shop-body"></div>
+    </div>
+  </div>
+
+  <!-- RULE UNLOCK POPUP -->
+  <div id="overlay-rule" class="overlay hidden">
+    <div class="panel rule-panel" id="rule-panel"></div>
+  </div>
+
+  <!-- FATAL -->
+  <div id="overlay-fatal" class="overlay hidden">
+    <div class="panel">
+      <h2 class="panel-title">CANNOT START</h2>
+      <p id="fatal-msg" style="margin-top:14px; color:#c3cdf0; line-height:1.5;"></p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="rules.js"></script>
+  <script src="words.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
