@@ -242,6 +242,13 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
   color: #fff; letter-spacing: 1px; line-height: 1.15;
 }
 .reveal-word .art { font-weight: 900; }
+.reveal-level {
+  display: inline-block; vertical-align: super;
+  font-size: 12px; font-weight: 800; letter-spacing: 1px;
+  color: #8fa0c2; background: rgba(148, 163, 184, .12);
+  border: 1px solid rgba(148, 163, 184, .4);
+  padding: 2px 8px; border-radius: 999px; margin-left: 4px;
+}
 .reveal-en { margin-top: 5px; font-size: 18px; font-weight: 500; color: #9fb0d0; letter-spacing: .5px; }
 .reveal-compound { margin-top: 7px; font-size: 13.5px; font-weight: 700; letter-spacing: .6px; color: #8fa0c2; }
 .reveal-compound .art { font-weight: 900; }
@@ -263,6 +270,12 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
   background: rgba(239, 68, 68, .13);
   border: 1px solid rgba(239, 68, 68, .8);
   animation: excPulse 1.3s ease-in-out infinite;
+}
+.chip-mnemo { margin-top: 9px; font-size: 13.5px; line-height: 1.4; color: #fcd34d; }
+.chip-mnemo-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10.5px; font-weight: 800; letter-spacing: 1.2px;
+  color: #fbbf24; margin-right: 7px;
 }
 .chip-exception .chip-title { color: #f87171; }
 @keyframes excPulse {

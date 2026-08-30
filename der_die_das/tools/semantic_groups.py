@@ -22,7 +22,9 @@ SEMANTIC_GROUPS = {
     # memorize as "the drinks trap" than as a rule-less word
     'der_drinks': {'Kaffee', 'Tee', 'Wein', 'Bier', 'Saft', 'Milch'},
     'das_inf': {'Essen', 'Schwimmen', 'Tanzen', 'Sehen', 'Sterben', 'Verhalten', 'Leben'},
-    'die_female_persons': {'Frau'},
+    # female persons incl. family names without -in — many break the
+    # -er -> der ending rule (Mutter, Schwester)
+    'die_female_persons': {'Frau', 'Mutter', 'Schwester', 'Tochter'},
 
     # adjectival nouns: adjectives used as nouns decline like adjectives
     # (die Bekannte is feminine; the masculine counterpart is der Bekannte /

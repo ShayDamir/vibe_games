@@ -8,4 +8,4 @@
 [x] price calibration for unlocking the word level: 3 perfect 20-streak rounds (160 coins)
 [x] add a button in the store to reset the local storage and start from scratch. Double-ask the user before doing that.
 [x] keep a list of last 10 player failures and mix up to 3 of them randomly into every round, giving double points if player gets them right this time (add ERROR RECOVERY label to the card) and remove them from the list
-[ ] display the word level (A1, A2...) at the word card
+[x] display the word level (A1, A2...) at the word card

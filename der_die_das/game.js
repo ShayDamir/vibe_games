@@ -162,7 +162,8 @@ const CFG = {
   maxRecovery: 3,     // max error-recovery words mixed into a round
   levelCost: 160,     // word-level unlock price (≈ 3 perfect 20-streak rounds)
   flightTime: 4.6,    // seconds a word is in play before it counts as missed
-  revealTime: 2.7,    // seconds the rule popup stays visible
+  revealTime: 2.7,    // seconds the rule popup stays visible (correct answer)
+  revealTimeFail: 5.5, // ...after a wrong answer or miss — longer, to read and memorize
   gapTime: 0.5,       // pause between words
   startZ: -150,
   missZ: 4,
@@ -571,6 +572,7 @@ function drawCard(a, prog) {
 const GameState = {
   state: 'menu',      // menu | intro | fly | reveal | gap | roundend | shop
   stateT: 0,
+  revealOutcome: null, // outcome of the reveal currently on screen
   round: Math.max(1, save.rounds + 1),
   queue: [],
   idx: 0,             // words resolved this round
@@ -921,6 +923,7 @@ function updateActive(dt) {
 /* ============================ reveal popup ============================ */
 
 function showReveal(word, outcome) {
+  GameState.revealOutcome = outcome;
   const rule = RULE_BY_ID[word.rule];
   let badge;
   if (outcome === 'correct') {
@@ -940,6 +943,9 @@ function showReveal(word, outcome) {
     const txt = word.note || 'No rule covers this word — memorize it with the article!';
     chip = '<div class="chip chip-exception"><div class="chip-title">NO RULE</div><div class="chip-text">' + esc(txt) + '</div></div>';
   }
+  if (word.mnemo) {
+    chip += '<div class="chip-mnemo"><span class="chip-mnemo-label">MNEMONIC</span>' + esc(word.mnemo) + '</div>';
+  }
   let compound = '';
   if (word.compound) {
     const head = WORD_BY_NAME[(word.head || '').toLowerCase()];
@@ -952,7 +958,8 @@ function showReveal(word, outcome) {
   ui.reveal.innerHTML =
     '<div class="reveal-card ' + cls + '">' +
       badge +
-      '<div class="reveal-word"><span class="art art-' + word.g + '">' + word.g + '</span> ' + esc(word.w) + '</div>' +
+      '<div class="reveal-word"><span class="art art-' + word.g + '">' + word.g + '</span> ' + esc(word.w) +
+        ' <span class="reveal-level" title="CEFR level">' + wordLevel(word).toUpperCase() + '</span></div>' +
       '<div class="reveal-en">' + esc(word.en) + '</div>' +
       compound +
       chip +
@@ -1385,13 +1392,15 @@ function update(dt) {
         setGameState('fly');
       }
       break;
-    case 'reveal':
+    case 'reveal': {
       GameState.stateT += dt;
-      if (GameState.stateT >= CFG.revealTime) {
+      const t = GameState.revealOutcome === 'correct' ? CFG.revealTime : CFG.revealTimeFail;
+      if (GameState.stateT >= t) {
         hideReveal();
         setGameState('gap');
       }
       break;
+    }
     case 'gap':
       GameState.stateT += dt;
       if (GameState.stateT >= CFG.gapTime) nextWord();

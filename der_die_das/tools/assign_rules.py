@@ -60,6 +60,8 @@ def rebuild(inner, rule_id, note, head):
     base = re.sub(r",\s*compound:\s*true", "", base)
     base = re.sub(r",\s*head:\s*'(?:[^'\\]|\\.)*'", "", base)
     base = base.rstrip().rstrip(',')
+    mnemo_m = re.search(r",\s*mnemo:\s*'((?:[^'\\]|\\.)*)'", inner)
+    base = re.sub(r",\s*mnemo:\s*'(?:[^'\\]|\\.)*'", "", base)
     extra = ''
     if head:
         extra += ", compound: true, head: '%s'" % js_str(head)
@@ -67,6 +69,8 @@ def rebuild(inner, rule_id, note, head):
         extra += ", rule: '%s'" % js_str(rule_id)
         if note is not None:
             extra += ", exception: true,\n    note: '%s'" % js_str(note)
+    if mnemo_m:
+        extra += ",\n    mnemo: '%s'" % js_str(mnemo_m.group(1))
     return base + extra
 
 
