@@ -60,8 +60,13 @@ def rebuild(inner, rule_id, note, head):
     base = re.sub(r",\s*compound:\s*true", "", base)
     base = re.sub(r",\s*head:\s*'(?:[^'\\]|\\.)*'", "", base)
     base = base.rstrip().rstrip(',')
-    mnemo_m = re.search(r",\s*mnemo:\s*'((?:[^'\\]|\\.)*)'", inner)
-    base = re.sub(r",\s*mnemo:\s*'(?:[^'\\]|\\.)*'", "", base)
+    # free-text trailing fields (genders, mnemo) survive the rewrite
+    trailing = []
+    for name in ('genders', 'mnemo'):
+        m2 = re.search(r",\s*%s:\s*'((?:[^'\\]|\\.)*)'" % name, inner)
+        base = re.sub(r",\s*%s:\s*'(?:[^'\\]|\\.)*'" % name, "", base)
+        if m2:
+            trailing.append(",\n    %s: '%s'" % (name, js_str(m2.group(1))))
     extra = ''
     if head:
         extra += ", compound: true, head: '%s'" % js_str(head)
@@ -69,9 +74,7 @@ def rebuild(inner, rule_id, note, head):
         extra += ", rule: '%s'" % js_str(rule_id)
         if note is not None:
             extra += ", exception: true,\n    note: '%s'" % js_str(note)
-    if mnemo_m:
-        extra += ",\n    mnemo: '%s'" % js_str(mnemo_m.group(1))
-    return base + extra
+    return base + extra + ''.join(trailing)
 
 
 def main():

@@ -954,6 +954,10 @@ function showReveal(word, outcome) {
         '<span class="art art-' + head.g + '">' + head.g + '</span> ' + esc(head.w) + '</div>';
     }
   }
+  let multi = '';
+  if (word.genders) {
+    multi = '<div class="reveal-genders">' + esc(word.genders) + ' — both articles are correct</div>';
+  }
   const cls = outcome === 'correct' ? 'ok' : outcome === 'wrong' ? 'bad' : 'miss';
   ui.reveal.innerHTML =
     '<div class="reveal-card ' + cls + '">' +
@@ -961,6 +965,7 @@ function showReveal(word, outcome) {
       '<div class="reveal-word"><span class="art art-' + word.g + '">' + word.g + '</span> ' + esc(word.w) +
         ' <span class="reveal-level" title="CEFR level">' + wordLevel(word).toUpperCase() + '</span></div>' +
       '<div class="reveal-en">' + esc(word.en) + '</div>' +
+      multi +
       compound +
       chip +
     '</div>';

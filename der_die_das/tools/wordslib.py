@@ -210,6 +210,7 @@ def load_words(path=WORDS_JS):
             'exception': has_flag(obj, 'exception'),
             'note': field(obj, 'note'),
             'mnemo': field(obj, 'mnemo'),
+            'genders': field(obj, 'genders'),
             'compound': has_flag(obj, 'compound'),
             'head': field(obj, 'head'),
             'part': has_flag(obj, 'part'),

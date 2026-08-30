@@ -950,8 +950,11 @@
   "url": "https://www.duden.de/rechtschreibung/Handy"
  },
  "Laptop": {
-  "status": "error",
-  "gender": "no article found on page",
+  "status": "ok",
+  "gender": [
+   "der",
+   "das"
+  ],
   "url": "https://www.duden.de/rechtschreibung/Laptop"
  },
  "Internet": {
@@ -1350,8 +1353,11 @@
   "url": "https://www.duden.de/rechtschreibung/Zug"
  },
  "Taxi": {
-  "status": "error",
-  "gender": "no article found on page",
+  "status": "ok",
+  "gender": [
+   "das",
+   "der"
+  ],
   "url": "https://www.duden.de/rechtschreibung/Taxi"
  },
  "Fahrkarte": {
@@ -1605,8 +1611,11 @@
   "url": "https://www.duden.de/rechtschreibung/Papier"
  },
  "Radiergummi": {
-  "status": "error",
-  "gender": "no article found on page",
+  "status": "ok",
+  "gender": [
+   "der",
+   "das"
+  ],
   "url": "https://www.duden.de/rechtschreibung/Radiergummi"
  },
  "Tafel": {
@@ -1680,8 +1689,11 @@
   "url": "https://www.duden.de/rechtschreibung/Geraet"
  },
  "App": {
-  "status": "error",
-  "gender": "no article found on page",
+  "status": "ok",
+  "gender": [
+   "die",
+   "das"
+  ],
   "url": "https://www.duden.de/rechtschreibung/App"
  },
  "Datei": {
@@ -2140,8 +2152,11 @@
   "url": "https://www.duden.de/rechtschreibung/Podcast"
  },
  "Blog": {
-  "status": "error",
-  "gender": "no article found on page",
+  "status": "ok",
+  "gender": [
+   "das",
+   "der"
+  ],
   "url": "https://www.duden.de/rechtschreibung/Blog"
  },
  "Party": {
@@ -5010,8 +5025,11 @@
   "url": "https://www.duden.de/rechtschreibung/Freundschaftsanfrage"
  },
  "Hashtag": {
-  "status": "error",
-  "gender": "no article found on page",
+  "status": "ok",
+  "gender": [
+   "das",
+   "der"
+  ],
   "url": "https://www.duden.de/rechtschreibung/Hashtag"
  },
  "Reichweite": {
@@ -5613,5 +5631,1495 @@
   "status": "ok",
   "gender": "die",
   "url": "https://www.duden.de/rechtschreibung/Pflichtverletzung"
+ },
+ "Diskriminierung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Diskriminierung"
+ },
+ "Solidarität": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Solidaritaet"
+ },
+ "Zivilcourage": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Zivilcourage"
+ },
+ "Engagement": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Engagement"
+ },
+ "Ehrenamtliche": {
+  "status": "error",
+  "gender": "no article found on page",
+  "url": "https://www.duden.de/rechtschreibung/Ehrenamtliche"
+ },
+ "Menschenwürde": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Menschenwuerde"
+ },
+ "Missbrauch": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Missbrauch"
+ },
+ "Betrug": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Betrug"
+ },
+ "Korruption": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Korruption"
+ },
+ "Vorurteil": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Vorurteil"
+ },
+ "Armut": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Armut"
+ },
+ "Obdachlosigkeit": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Obdachlosigkeit"
+ },
+ "Reichtum": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Reichtum"
+ },
+ "Wohlstand": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Wohlstand"
+ },
+ "Umweltethik": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Umweltethik"
+ },
+ "Klimaschutz": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Klimaschutz"
+ },
+ "Generationengerechtigkeit": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Generationengerechtigkeit"
+ },
+ "Tierethik": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Tierethik"
+ },
+ "Spende": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Spende"
+ },
+ "Konsum": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Konsum"
+ },
+ "Verbraucher": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Verbraucher"
+ },
+ "Verbraucherin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Verbraucherin"
+ },
+ "Konsument": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Konsument"
+ },
+ "Konsumentin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Konsumentin"
+ },
+ "Konsumverhalten": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Konsumverhalten"
+ },
+ "Konsumgesellschaft": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Konsumgesellschaft"
+ },
+ "Bedürfnis": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Beduerfnis"
+ },
+ "Werbekampagne": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Werbekampagne"
+ },
+ "Werbespot": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Werbespot"
+ },
+ "Werbeplakat": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Werbeplakat"
+ },
+ "Reklame": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Reklame"
+ },
+ "Produkt": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Produkt"
+ },
+ "Marke": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Marke"
+ },
+ "Markenbindung": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Markenbindung"
+ },
+ "Markenbewusstsein": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Markenbewusstsein"
+ },
+ "Preisgestaltung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Preisgestaltung"
+ },
+ "Preisvergleich": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Preisvergleich"
+ },
+ "Sonderangebot": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Sonderangebot"
+ },
+ "Kauf": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Kauf"
+ },
+ "Kaufrausch": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Kaufrausch"
+ },
+ "Einkaufsverhalten": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Einkaufsverhalten"
+ },
+ "Online-Handel": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Online-Handel"
+ },
+ "Produktbewertung": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Produktbewertung"
+ },
+ "Kaufentscheidung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kaufentscheidung"
+ },
+ "Rückgabe": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Rueckgabe"
+ },
+ "Umtausch": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Umtausch"
+ },
+ "Kaufkraft": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kaufkraft"
+ },
+ "Ratenzahlung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Ratenzahlung"
+ },
+ "Kreditkarte": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kreditkarte"
+ },
+ "Kundenbindung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kundenbindung"
+ },
+ "Verbraucherzentrale": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Verbraucherzentrale"
+ },
+ "Konsumzwang": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Konsumzwang"
+ },
+ "Produktverpackung": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Produktverpackung"
+ },
+ "Werbeslogan": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Werbeslogan"
+ },
+ "Kaufempfehlung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kaufempfehlung"
+ },
+ "Arbeitswelt": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Arbeitswelt"
+ },
+ "Arbeitgeber": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Arbeitgeber"
+ },
+ "Arbeitgeberin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Arbeitgeberin"
+ },
+ "Arbeitnehmer": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Arbeitnehmer"
+ },
+ "Arbeitnehmerin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Arbeitnehmerin"
+ },
+ "Konferenz": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Konferenz"
+ },
+ "Präsentation": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Praesentation"
+ },
+ "Mitteilung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Mitteilung"
+ },
+ "Anhang": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Anhang"
+ },
+ "Protokoll": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Protokoll"
+ },
+ "Vereinbarung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Vereinbarung"
+ },
+ "Absprache": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Absprache"
+ },
+ "Frist": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Frist"
+ },
+ "Anweisung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Anweisung"
+ },
+ "Rückmeldung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Rueckmeldung"
+ },
+ "Arbeitsvertrag": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Arbeitsvertrag"
+ },
+ "Lohn": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Lohn"
+ },
+ "Fortbildung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Fortbildung"
+ },
+ "Kompetenz": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kompetenz"
+ },
+ "Qualifikation": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Qualifikation"
+ },
+ "Politiker": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Politiker"
+ },
+ "Politikerin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Politikerin"
+ },
+ "Bundeskanzleramt": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Bundeskanzleramt"
+ },
+ "Bundespräsident": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Bundespraesident"
+ },
+ "Bundespräsidentin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Bundespraesidentin"
+ },
+ "Bundeskanzler": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Bundeskanzler"
+ },
+ "Bundeskanzlerin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Bundeskanzlerin"
+ },
+ "Wähler": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Waehler"
+ },
+ "Wählerin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Waehlerin"
+ },
+ "Wahlergebnis": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Wahlergebnis"
+ },
+ "Politikverdrossenheit": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Politikverdrossenheit"
+ },
+ "Mitbestimmung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Mitbestimmung"
+ },
+ "Asylrecht": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Asylrecht"
+ },
+ "Asylbewerber": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Asylbewerber"
+ },
+ "Asylbewerberin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Asylbewerberin"
+ },
+ "Bürgerrecht": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Buergerrecht"
+ },
+ "Diplomatie": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Diplomatie"
+ },
+ "Diplomat": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Diplomat"
+ },
+ "Diplomatin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Diplomatin"
+ },
+ "Botschaft": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Botschaft"
+ },
+ "Botschafter": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Botschafter"
+ },
+ "Botschafterin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Botschafterin"
+ },
+ "Sanktion": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Sanktion"
+ },
+ "Embargo": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Embargo"
+ },
+ "Friedensverhandlung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Friedensverhandlung"
+ },
+ "Krieg": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Krieg"
+ },
+ "Frieden": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Frieden"
+ },
+ "Instabilität": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Instabilitaet"
+ },
+ "Entwicklungspolitik": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Entwicklungspolitik"
+ },
+ "Konflikt": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Konflikt"
+ },
+ "Innenstadt": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Innenstadt"
+ },
+ "Vorstadt": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Vorstadt"
+ },
+ "Wohngegend": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Wohngegend"
+ },
+ "Wohnhaus": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Wohnhaus"
+ },
+ "Hochhaus": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Hochhaus"
+ },
+ "Mietwohnung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Mietwohnung"
+ },
+ "Eigentumswohnung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Eigentumswohnung"
+ },
+ "Mieter": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Mieter"
+ },
+ "Mieterin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Mieterin"
+ },
+ "Bauprojekt": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Bauprojekt"
+ },
+ "Baustelle": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Baustelle"
+ },
+ "Straßenbahn": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Strassenbahn"
+ },
+ "Verkehrsnetz": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Verkehrsnetz"
+ },
+ "Umweltzone": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Umweltzone"
+ },
+ "Fahrspur": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Fahrspur"
+ },
+ "Fußgänger": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Fussgaenger"
+ },
+ "Fußgängerin": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Fussgaengerin"
+ },
+ "Fußgängerzone": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Fussgaengerzone"
+ },
+ "Bürgersteig": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Buergersteig"
+ },
+ "Straßenschild": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Strassenschild"
+ },
+ "Straßenbeleuchtung": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Strassenbeleuchtung"
+ },
+ "Grünfläche": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Gruenflaeche"
+ },
+ "Müllabfuhr": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Muellabfuhr"
+ },
+ "Abfallentsorgung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Abfallentsorgung"
+ },
+ "Wasserversorgung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Wasserversorgung"
+ },
+ "Stromversorgung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Stromversorgung"
+ },
+ "Kanalnetz": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Kanalnetz"
+ },
+ "Stadtverwaltung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Stadtverwaltung"
+ },
+ "Bürgeramt": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Buergeramt"
+ },
+ "Stadtplanung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Stadtplanung"
+ },
+ "Verkehrsplanung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Verkehrsplanung"
+ },
+ "Mietpreisbremse": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Mietpreisbremse"
+ },
+ "Gentrifizierung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Gentrifizierung"
+ },
+ "Ansicht": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Ansicht"
+ },
+ "Zustimmung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Zustimmung"
+ },
+ "Ablehnung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Ablehnung"
+ },
+ "Einwand": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Einwand"
+ },
+ "Widerspruch": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Widerspruch"
+ },
+ "Begründung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Begruendung"
+ },
+ "These": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/These"
+ },
+ "Antithese": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Antithese"
+ },
+ "Schlussfolgerung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Schlussfolgerung"
+ },
+ "Aussage": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Aussage"
+ },
+ "Behauptung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Behauptung"
+ },
+ "Analyse": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Analyse"
+ },
+ "Struktur": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Struktur"
+ },
+ "Aufbau": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Aufbau"
+ },
+ "Gliederung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Gliederung"
+ },
+ "Übergang": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Uebergang"
+ },
+ "Formulierung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Formulierung"
+ },
+ "Perspektive": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Perspektive"
+ },
+ "Wiederholung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Wiederholung"
+ },
+ "Metapher": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Metapher"
+ },
+ "Ironie": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Ironie"
+ },
+ "Übertreibung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Uebertreibung"
+ },
+ "Gegenüberstellung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Gegenueberstellung"
+ },
+ "Klimapolitik": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Klimapolitik"
+ },
+ "Klimaziel": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Klimaziel"
+ },
+ "Energiewende": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Energiewende"
+ },
+ "Wasserkraft": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Wasserkraft"
+ },
+ "Mülltrennung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Muelltrennung"
+ },
+ "Abfallwirtschaft": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Abfallwirtschaft"
+ },
+ "Plastikmüll": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Plastikmuell"
+ },
+ "Wasserverschmutzung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Wasserverschmutzung"
+ },
+ "Artenvielfalt": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Artenvielfalt"
+ },
+ "Artensterben": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Artensterben"
+ },
+ "Ökosystem": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Oekosystem"
+ },
+ "Treibhausgas": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Treibhausgas"
+ },
+ "Energieeffizienz": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Energieeffizienz"
+ },
+ "Kreislaufwirtschaft": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kreislaufwirtschaft"
+ },
+ "Umweltschaden": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Umweltschaden"
+ },
+ "Umweltsünder": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Umweltsuender"
+ },
+ "Umweltsünderin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Umweltsuenderin"
+ },
+ "Entwicklungsland": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Entwicklungsland"
+ },
+ "Industrieland": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Industrieland"
+ },
+ "Armutsbekämpfung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Armutsbekaempfung"
+ },
+ "Wasserknappheit": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Wasserknappheit"
+ },
+ "Hungersnot": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Hungersnot"
+ },
+ "Nahrungsknappheit": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Nahrungsknappheit"
+ },
+ "Fluchtursache": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Fluchtursache"
+ },
+ "Aktivist": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Aktivist"
+ },
+ "Aktivistin": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Aktivistin"
+ },
+ "Klimabewegung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Klimabewegung"
+ },
+ "Einkauf": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Einkauf"
+ },
+ "Zeit": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Zeit"
+ },
+ "Raum": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Raum"
+ },
+ "Zeug": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Zeug"
+ },
+ "Spielzeug": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Spielzeug"
+ },
+ "Sehen": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Sehen"
+ },
+ "Automat": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Automat"
+ },
+ "Lage": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Lage"
+ },
+ "Halt": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Halt"
+ },
+ "Rat": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Rat"
+ },
+ "Bild": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Bild"
+ },
+ "Gabe": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Gabe"
+ },
+ "Hafen": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Hafen"
+ },
+ "Schirm": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Schirm"
+ },
+ "Eintritt": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Eintritt"
+ },
+ "Zettel": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Zettel"
+ },
+ "Stück": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Stueck"
+ },
+ "Wagen": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Wagen"
+ },
+ "Leben": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Leben"
+ },
+ "Dienst": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Dienst"
+ },
+ "Lauf": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Lauf"
+ },
+ "Aufnahme": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Aufnahme"
+ },
+ "Gummi": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Gummi"
+ },
+ "Tank": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Tank"
+ },
+ "Stelle": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Stelle"
+ },
+ "Ablauf": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Ablauf"
+ },
+ "Uhr": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Uhr"
+ },
+ "Ende": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Ende"
+ },
+ "Maschine": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Maschine"
+ },
+ "Schrift": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Schrift"
+ },
+ "Advent": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Advent"
+ },
+ "Asyl": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Asyl"
+ },
+ "Feuer": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Feuer"
+ },
+ "Flasche": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Flasche"
+ },
+ "Werk": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Werk"
+ },
+ "Wehr": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Wehr"
+ },
+ "Korb": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Korb"
+ },
+ "Bauer": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Bauer"
+ },
+ "Platte": {
+  "status": "error",
+  "gender": "no article found on page",
+  "url": "https://www.duden.de/rechtschreibung/Platte"
+ },
+ "Ticket": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Ticket"
+ },
+ "Gast": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Gast"
+ },
+ "Grund": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Grund"
+ },
+ "Wandel": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Wandel"
+ },
+ "Recht": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Recht"
+ },
+ "Katastrophe": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Katastrophe"
+ },
+ "Plastik": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Plastik"
+ },
+ "Bund": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Bund"
+ },
+ "Rand": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Rand"
+ },
+ "Tuch": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Tuch"
+ },
+ "Effekt": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Effekt"
+ },
+ "Kraft": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Kraft"
+ },
+ "Schutz": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Schutz"
+ },
+ "Punkt": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Punkt"
+ },
+ "Welt": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Welt"
+ },
+ "Bürger": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Buerger"
+ },
+ "Umfeld": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Umfeld"
+ },
+ "Art": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Art"
+ },
+ "Sterben": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Sterben"
+ },
+ "Kosten": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kosten"
+ },
+ "Schritt": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Schritt"
+ },
+ "Tausch": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Tausch"
+ },
+ "Defizit": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Defizit"
+ },
+ "Netz": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Netz"
+ },
+ "Verhalten": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Verhalten"
+ },
+ "Zwang": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Zwang"
+ },
+ "Auszug": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Auszug"
+ },
+ "Nachweis": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Nachweis"
+ },
+ "Stamm": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Stamm"
+ },
+ "Rausch": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Rausch"
+ },
+ "Tat": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Tat"
+ },
+ "Maß": {
+  "status": "mismatch",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Mass"
+ },
+ "Aufenthalt": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Aufenthalt"
+ },
+ "Gas": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Gas"
+ },
+ "Schaden": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Schaden"
+ },
+ "Apparat": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Apparat"
+ },
+ "Sieg": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Sieg"
+ },
+ "Plakat": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Plakat"
+ },
+ "Slogan": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Slogan"
+ },
+ "Satz": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Satz"
+ },
+ "Form": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Form"
+ },
+ "Kunft": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Kunft"
+ },
+ "Trag": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Trag"
+ },
+ "Ort": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Ort"
+ },
+ "Schild": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Schild"
+ },
+ "Abfuhr": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Abfuhr"
+ },
+ "Trenner": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Trenner"
+ },
+ "Trennung": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Trennung"
+ },
+ "Sack": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Sack"
+ },
+ "Schluss": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Schluss"
+ },
+ "Kampf": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Kampf"
+ },
+ "Fall": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Fall"
+ },
+ "Ton": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Ton"
+ },
+ "Saal": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Saal"
+ },
+ "Tritt": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Tritt"
+ },
+ "Gang": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Gang"
+ },
+ "Mobbing": {
+  "status": "ok",
+  "gender": "das",
+  "url": "https://www.duden.de/rechtschreibung/Mobbing"
+ },
+ "Stand": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Stand"
+ },
+ "Schlag": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Schlag"
+ },
+ "Vielfalt": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Vielfalt"
+ },
+ "Spruch": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Spruch"
+ },
+ "Hang": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Hang"
+ },
+ "Sicht": {
+  "status": "ok",
+  "gender": "die",
+  "url": "https://www.duden.de/rechtschreibung/Sicht"
+ },
+ "Bau": {
+  "status": "ok",
+  "gender": "der",
+  "url": "https://www.duden.de/rechtschreibung/Bau"
+ },
+ "Deutsche": {
+  "status": "notfound",
+  "gender": null,
+  "url": "https://www.duden.de/rechtschreibung/Deutsche"
+ },
+ "Jugendliche": {
+  "status": "error",
+  "gender": "no article found on page",
+  "url": "https://www.duden.de/rechtschreibung/Jugendliche"
+ },
+ "Erwachsene": {
+  "status": "error",
+  "gender": "no article found on page",
+  "url": "https://www.duden.de/rechtschreibung/Erwachsene"
+ },
+ "Verwandte": {
+  "status": "error",
+  "gender": "no article found on page",
+  "url": "https://www.duden.de/rechtschreibung/Verwandte"
+ },
+ "Arbeitslose": {
+  "status": "error",
+  "gender": "no article found on page",
+  "url": "https://www.duden.de/rechtschreibung/Arbeitslose"
+ },
+ "Kranke": {
+  "status": "error",
+  "gender": "no article found on page",
+  "url": "https://www.duden.de/rechtschreibung/Kranke"
+ },
+ "Reiche": {
+  "status": "error",
+  "gender": "no article found on page",
+  "url": "https://www.duden.de/rechtschreibung/Reiche"
  }
 }

@@ -5,7 +5,8 @@ Checks (errors fail the run, warnings do not):
 
   structure
     * w / g / en present and non-empty, g is der|die|das,
-      level (if any) is one of a1..c2
+      level (if any) is one of a1..c2,
+      genders (if any) contains the word's g (dual-gender lemmas)
     * part entries (part: true) are non-playable compound building blocks:
       they carry only w and en, nothing else
     * rule id (if any) exists in rules.js
@@ -88,6 +89,8 @@ def parse_words(text):
             'level': field(obj, 'level'),
             'exception': has_flag(obj, 'exception'),
             'note': field(obj, 'note'),
+            'mnemo': field(obj, 'mnemo'),
+            'genders': field(obj, 'genders'),
             'compound': has_flag(obj, 'compound'),
             'head': field(obj, 'head'),
             'part': has_flag(obj, 'part'),
@@ -167,6 +170,9 @@ def main():
             continue
         if e['g'] not in GENDERS:
             errors.append("line %d: '%s' has bad gender '%s'" % (line, label, e['g']))
+        if e['genders'] is not None and e['g'] not in re.findall(r'(der|die|das)', e['genders']):
+            errors.append("line %d: '%s' gender '%s' is not among its genders '%s'"
+                          % (line, label, e['g'], e['genders']))
         if e['level'] is not None and e['level'] not in LEVELS:
             errors.append("line %d: '%s' has bad level '%s'" % (line, label, e['level']))
         if e['exception'] and not e['note']:

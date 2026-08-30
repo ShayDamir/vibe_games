@@ -4,7 +4,9 @@
 For each playable word in words.js, fetches the Duden page
 https://www.duden.de/rechtschreibung/<Wort> and compares the article
 printed in the <h1> (span.lemma__determiner) with the gender stored in
-words.js. Words Duden does not know (HTTP 404) or requests that fail
+words.js. Dual-gender lemmas (e.g. `der oder das Laptop`) are OK when
+words.js uses any of the printed articles, and are listed separately.
+Words Duden does not know (HTTP 404) or requests that fail
 (403/timeout/...) are reported and SKIPPED — they do not fail the run.
 No slug guessing: only the exact word URL is tried.
 
@@ -36,7 +38,10 @@ from wordslib import WORDS_JS, load_words
 CACHE_FILE = Path(__file__).resolve().parent / 'cache' / 'duden_genders.json'
 UA = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/124.0 Safari/537.36')
-GENDER_RE = re.compile(r'lemma__determiner">(der|die|das)<')
+# dual-gender lemmas print e.g. `der <i>oder</i> das` — grab the whole
+# span and pull every article out of it
+DETERMINER_RE = re.compile(r'lemma__determiner">(.*?)</span>', re.S)
+ARTICLE_RE = re.compile(r'\b(der|die|das)\b')
 RETRYABLE = (403, 429, 500, 502, 503, 504)
 
 
@@ -73,8 +78,9 @@ def duden_url(word):
 
 def check_word(url, timeout, retries, delay):
     """Return (status, detail). status is one of
-    ok / mismatch / notfound / error — detail is the Duden article for
-    ok/mismatch and a short error message for error."""
+    ok / mismatch / notfound / error — detail is the list of Duden
+    articles for ok/mismatch (dual-gender lemmas carry more than one)
+    and a short error message for error."""
     status, body = fetch(url, timeout, retries, delay)
     if status == 404:
         return 'notfound', None
@@ -82,10 +88,11 @@ def check_word(url, timeout, retries, delay):
         return 'error', body or 'network error'
     if status != 200:
         return 'error', 'HTTP %s' % status
-    m = GENDER_RE.search(body)
-    if not m:
+    m = DETERMINER_RE.search(body)
+    articles = ARTICLE_RE.findall(m.group(1)) if m else []
+    if not articles:
         return 'error', 'no article found on page'
-    return 'ok', m.group(1)
+    return 'ok', articles
 
 
 def load_cache():
@@ -151,7 +158,7 @@ def main():
         for i, w in enumerate(todo, 1):
             url = duden_url(w['w'])
             status, duden_g = check_word(url, args.timeout, args.retries, args.delay)
-            if status == 'ok' and duden_g != w['g']:
+            if status == 'ok' and w['g'] not in duden_g:
                 status = 'mismatch'
             results[w['w']] = {'status': status, 'gender': duden_g, 'url': url}
             cache[w['w']] = results[w['w']]
@@ -160,7 +167,9 @@ def main():
                     'notfound': 'not-found', 'error': 'ERROR    '}[status]
             extra = ''
             if status == 'mismatch':
-                extra = 'words.js=%s duden=%s' % (w['g'], duden_g)
+                extra = 'words.js=%s duden=%s' % (w['g'], ', '.join(duden_g))
+            elif status == 'ok' and len(duden_g) > 1:
+                extra = 'duden: %s' % ', '.join(duden_g)
             elif status == 'error':
                 extra = duden_g or ''
             print('  %s  %s  %s' % (mark, w['w'], extra), flush=True)
@@ -188,11 +197,21 @@ def main():
     print('\nchecked: %d | ok: %d | MISMATCH: %d | not found: %d | errors: %d' % (
         len(words), counts['ok'], counts['mismatch'],
         counts['notfound'], counts['error']))
+    dual = [(w, r) for w in words
+            for r in [cache.get(w['w'])]
+            if r and r['status'] == 'ok' and isinstance(r['gender'], list) and len(r['gender']) > 1]
+    if dual:
+        print('\ndual-gender on Duden (both accepted, %d):' % len(dual))
+        for w, r in dual:
+            print('  %-24s duden: %s   (words.js uses %s)' % (
+                w['w'], ', '.join(r['gender']), w['g']))
     if mismatches:
         print('\nMISMATCH — words.js disagrees with Duden:')
         for w, r in mismatches:
+            g = r['gender']
+            g = ', '.join(g) if isinstance(g, list) else g
             print('  %-24s words.js: %s   duden: %s   %s' % (
-                w['w'], w['g'], r['gender'], r['url']))
+                w['w'], w['g'], g, r['url']))
     if notfound:
         print('\nnot on Duden (skipped, %d):' % len(notfound))
         print('  ' + ', '.join(w['w'] for w in notfound))
