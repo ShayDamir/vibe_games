@@ -21,7 +21,10 @@ SEMANTIC_GROUPS = {
     # Milch is in the group but marked as an exception (die) — easier to
     # memorize as "the drinks trap" than as a rule-less word
     'der_drinks': {'Kaffee', 'Tee', 'Wein', 'Bier', 'Saft', 'Milch'},
-    'das_inf': {'Essen', 'Schwimmen', 'Tanzen', 'Sehen', 'Sterben', 'Verhalten', 'Leben'},
+    'das_inf': {'Essen', 'Schwimmen', 'Tanzen', 'Sehen', 'Sterben', 'Verhalten', 'Leben', 'Befinden'},
+    # English verbs used as nouns, above all -ing forms (Cybermobbing inherits
+    # from its head Mobbing, like compound members of other groups)
+    'das_ing': {'Meeting', 'Recycling', 'Training', 'Mobbing', 'Online-Banking'},
     # female persons incl. family names without -in — many break the
     # -er -> der ending rule (Mutter, Schwester)
     'die_female_persons': {'Frau', 'Mutter', 'Schwester', 'Tochter'},

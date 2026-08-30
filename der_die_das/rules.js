@@ -119,6 +119,15 @@ window.GENDER_RULES = [
     unlockedByDefault: false
   },
   {
+    id: 'der_spekt',
+    gender: 'der',
+    endings: ['spekt'],
+    formula: '-spekt → der',
+    description: 'The -spekt ending is masculine (der Respekt, der Aspekt, der Prospekt, der Konspekt).',
+    cost: 25,
+    unlockedByDefault: false
+  },
+  {
     id: 'der_male_animals',
     gender: 'der',
     endings: null,
@@ -454,6 +463,15 @@ window.GENDER_RULES = [
     formula: '-ma → das',
     description: 'Greek words in -ma are neutral (das Klima, das Thema, das Drama) — except die Firma.',
     cost: 30,
+    unlockedByDefault: false
+  },
+  {
+    id: 'das_iel',
+    gender: 'das',
+    endings: ['iel'],
+    formula: '-iel → das',
+    description: 'Words ending in -iel are neutral (das Spiel, das Ziel, das Reiseziel).',
+    cost: 25,
     unlockedByDefault: false
   },
   {
