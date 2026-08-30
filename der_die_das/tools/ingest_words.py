@@ -8,10 +8,16 @@ else — phrases, example sentences, adverbs — is skipped).
 
 For every new word the script:
   * assigns the CEFR level from the file name (a1.txt -> 'a1', ...),
-  * determines the gender rule on the fly from rules.js endings
-    (longest ending wins); a gender mismatch becomes an exception entry
-    with a generated note — review the "!" lines of the dry run,
-  * skips words already present in words.js or seen earlier.
+  * marks compound nouns: a word that splits into two dictionary words
+    (plain or with a Fugen-s) gets `compound: true` and `head` set to its
+    head word — compound nouns take the gender of their head word,
+  * determines the gender rule on the fly (wordslib.desired_state): own
+    ending match, own semantic group (semantic_groups.py), or the head
+    word's rule, with the tie-break; a gender mismatch becomes an
+    exception entry with a generated note — review the "!" lines of the
+    dry run,
+  * skips words already present in words.js or seen earlier, plus known
+    plurals (SKIP_WORDS) since the game teaches singular nouns only.
 
 Usage:
   python3 ingest_words.py                     # dry run over all level files
@@ -24,13 +30,18 @@ import sys
 from pathlib import Path
 
 import wordslib
-from wordslib import LEVELS, SOURCE_DIR, WORDS_JS, js_str, load_rules, match_rule, existing_words
+from wordslib import (LEVELS, SOURCE_DIR, WORDS_JS, js_str, load_rules,
+                      load_semantic_groups, load_words, find_compound,
+                      desired_state, existing_words)
 
 # "german – english" (en dash, em dash or spaced hyphen as separator)
 SEP_RE = re.compile(r'^\s*(.+?)\s+[–—-]\s+(.+?)\s*$')
 # "der|die|das + one word, optional ', plural' part"
 ARTICLE_RE = re.compile(
     r'^(der|die|das)\s+([A-Za-zÄÖÜäöüß-]+?)(?:\s*,\s*\S+)?\s*$', re.IGNORECASE)
+# plurals that sneak in as plain "article + word" lines — the game teaches
+# singular nouns only (pluralia tantum have no singular form at all)
+SKIP_WORDS = {'kinder', 'eltern', 'nebenkosten'}
 
 
 def parse_german_side(german):
@@ -79,6 +90,8 @@ def build_block(entries):
             line = "  { w: '%s'," % js_str(e['w'])
             line += ' ' * (max_w - len(e['w']) + 1)
             line += "g: '%s', en: '%s', level: '%s'" % (e['g'], js_str(e['en']), e['level'])
+            if e.get('compound'):
+                line += ", compound: true, head: '%s'" % js_str(e['head'])
             if e.get('rule'):
                 line += ',' + ' ' * (max_en - len(e['en']) + 1)
                 line += "rule: '%s'" % e['rule']
@@ -126,6 +139,9 @@ def main():
         sys.exit('no source files found in %s' % source_dir)
 
     rules = load_rules()
+    groups = load_semantic_groups()
+    by_id = {r['id']: r for r in rules}
+    known = {e['w'].lower(): e for e in load_words(args.words_js)}
     seen = set(existing_words(args.words_js))
     all_entries, all_exceptions = [], []
 
@@ -145,25 +161,35 @@ def main():
                 continue
             for e in entries:
                 key = e['w'].lower()
+                if key in SKIP_WORDS:
+                    n_skip += 1
+                    continue
                 if key in seen:
                     n_dup += 1
                     continue
                 seen.add(key)
                 e['level'] = level
-                rule = match_rule(e['w'], rules)
-                if rule is None:
+                head_name = find_compound(e['w'], set(known))
+                head = known.get(head_name) if head_name else None
+                # the head must be a playable noun — a part carries no gender
+                if head and head.get('part'):
+                    head = None
+                if head:
+                    e['compound'] = True
+                    e['head'] = head['w']
+                rule_id, is_exception, note = desired_state(
+                    e['w'], e['g'], rules, groups, by_id, head)
+                e['rule'] = rule_id
+                if rule_id is None:
                     counts['no-rule'] += 1
-                elif rule['gender'] == e['g']:
-                    e['rule'] = rule['id']
-                    counts['rule'] += 1
-                else:
-                    e['rule'] = rule['id']
+                elif is_exception:
                     e['exception'] = True
-                    e['note'] = ('Classic trap: %s — but it is %s %s. '
-                                 'Memorize it with the article!'
-                                 % (rule['formula'], e['g'], e['w']))
+                    e['note'] = note
                     counts['exception'] += 1
                     all_exceptions.append(e)
+                else:
+                    counts['rule'] += 1
+                known[key] = e
                 all_entries.append(e)
                 n_new += 1
         print('== %s (level %s) ==' % (f.name, level))

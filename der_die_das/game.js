@@ -23,9 +23,11 @@ const WORDS = window.GERMAN_WORDS || [];
 const RULES = window.GENDER_RULES || [];
 const RULE_BY_ID = {};
 RULES.forEach(function (r) { RULE_BY_ID[r.id] = r; });
+const WORD_BY_NAME = {};
+WORDS.forEach(function (w) { WORD_BY_NAME[w.w.toLowerCase()] = w; });
 
-/* CEFR word levels in unlock order (a1 is in play from the start;
-   see TODO: unlock further levels by spending coins) */
+/* CEFR word levels in unlock order. a1 is in play from the start;
+   further levels are unlocked in the shop for CFG.levelCost, in order. */
 const WORD_LEVELS = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2'];
 
 const G = {
@@ -75,13 +77,81 @@ function exampleWords(rule, n) {
   return ex.slice(0, n || 4);
 }
 
-/* Words whose rule is unlocked. Words without a rule are always in play.
-   When every rule is unlocked this is the full dictionary. */
+/* CEFR level of a word; words without a level count as a1. */
+function wordLevel(w) { return w.level || 'a1'; }
+
+/* Words whose level and rule are unlocked. Words without a rule are always
+   in play. When every level and rule is unlocked this is the full dictionary.
+   Part words (part: true) are compound-word building blocks, not playable
+   nouns — they are never in the pool. */
 function availablePool() {
   const pool = WORDS.filter(function (w) {
-    return !w.rule || (RULE_BY_ID[w.rule] && save.unlocked.indexOf(w.rule) !== -1);
+    return !w.part &&
+      save.unlockedLevels.indexOf(wordLevel(w)) !== -1 &&
+      (!w.rule || (RULE_BY_ID[w.rule] && save.unlocked.indexOf(w.rule) !== -1));
   });
-  return pool.length ? pool : WORDS.slice();
+  return pool.length ? pool : WORDS.filter(function (w) { return !w.part; });
+}
+
+/* ============================ word levels & error recovery ============================ */
+
+function levelWordCount(lvl) {
+  return WORDS.filter(function (w) { return !w.part && wordLevel(w) === lvl; }).length;
+}
+
+/* The first level (in WORD_LEVELS order) that is not unlocked yet. */
+function nextLockedLevel() {
+  for (let i = 0; i < WORD_LEVELS.length; i++) {
+    if (save.unlockedLevels.indexOf(WORD_LEVELS[i]) === -1) return WORD_LEVELS[i];
+  }
+  return null;
+}
+
+function buyLevel(lvl) {
+  if (lvl !== nextLockedLevel() || save.coins < CFG.levelCost) return;
+  save.coins -= CFG.levelCost;
+  save.unlockedLevels.push(lvl);
+  persist();
+  Sfx.buy();
+  renderShop();
+  toast('LEVEL ' + lvl.toUpperCase() + ' UNLOCKED — ' + levelWordCount(lvl) + ' WORDS JOIN THE POOL', 'streak');
+}
+
+/* Back to the starting stage: level a1, default rules, 0 coins, no history. */
+function resetToStart() {
+  save.coins = 0;
+  save.rounds = 0;
+  save.bestStreak = 0;
+  save.failures = [];
+  save.unlockedLevels = ['a1'];
+  save.unlocked = RULES.filter(function (r) { return r.unlockedByDefault; }).map(function (r) { return r.id; });
+  persist();
+}
+
+/* The recent-failure list (last 10, newest first) feeds error recovery. */
+function noteFailure(word) {
+  const key = word.w.toLowerCase();
+  save.failures = save.failures.filter(function (n) { return n !== key; });
+  save.failures.unshift(key);
+  if (save.failures.length > 10) save.failures.length = 10;
+  persist();
+}
+function clearFailure(word) {
+  const key = word.w.toLowerCase();
+  if (save.failures.indexOf(key) === -1) return;
+  save.failures = save.failures.filter(function (n) { return n !== key; });
+  persist();
+}
+
+/* Up to CFG.maxRecovery random words from the failure list that are still in play. */
+function pickRecovery(pool) {
+  if (!save.failures.length) return [];
+  const inPool = {};
+  pool.forEach(function (w) { inPool[w.w.toLowerCase()] = w; });
+  return shuffle(save.failures)
+    .map(function (n) { return inPool[n.toLowerCase()]; })
+    .filter(function (w) { return !!w; })
+    .slice(0, CFG.maxRecovery);
 }
 
 /* ============================ config ============================ */
@@ -89,6 +159,8 @@ function availablePool() {
 const CFG = {
   roundWords: 20,     // words per round
   maxNoRule: 3,       // max words without a rule in a single round
+  maxRecovery: 3,     // max error-recovery words mixed into a round
+  levelCost: 160,     // word-level unlock price (≈ 3 perfect 20-streak rounds)
   flightTime: 4.6,    // seconds a word is in play before it counts as missed
   revealTime: 2.7,    // seconds the rule popup stays visible
   gapTime: 0.5,       // pause between words
@@ -111,7 +183,7 @@ const FADE_TIME = 0.3;        // ...before it fades out
 /* ============================ persistence ============================ */
 
 const SAVE_KEY = 'der_die_das_save_v1';
-let save = { coins: 0, unlocked: [], rounds: 0, bestStreak: 0 };
+let save = { coins: 0, unlocked: [], rounds: 0, bestStreak: 0, unlockedLevels: ['a1'], failures: [] };
 try {
   const raw = localStorage.getItem(SAVE_KEY);
   if (raw) {
@@ -121,6 +193,11 @@ try {
       save.rounds = Number(parsed.rounds) || 0;
       save.bestStreak = Number(parsed.bestStreak) || 0;
       save.unlocked = Array.isArray(parsed.unlocked) ? parsed.unlocked : [];
+      save.unlockedLevels = Array.isArray(parsed.unlockedLevels) ? parsed.unlockedLevels.slice() : ['a1'];
+      if (save.unlockedLevels.indexOf('a1') === -1) save.unlockedLevels.unshift('a1');
+      save.failures = Array.isArray(parsed.failures)
+        ? parsed.failures.filter(function (n) { return typeof n === 'string'; }).slice(0, 10)
+        : [];
     }
   }
 } catch (e) { /* fresh start */ }
@@ -464,6 +541,28 @@ function drawCard(a, prog) {
     x.globalAlpha = 1;
     x.shadowBlur = 0;
   }
+
+  /* error-recovery label: this word cost the player points before */
+  if (a.isRecovery) {
+    const label = 'ERROR RECOVERY';
+    x.font = '800 26px Orbitron, "Segoe UI", sans-serif';
+    const tw = x.measureText(label).width;
+    const bx = 30, by = 30, bw = tw + 34, bh = 44;
+    x.beginPath();
+    if (x.roundRect) x.roundRect(bx, by, bw, bh, 22); else x.rect(bx, by, bw, bh);
+    x.fillStyle = 'rgba(239,68,68,0.18)';
+    x.fill();
+    x.lineWidth = 3;
+    x.strokeStyle = 'rgba(248,113,113,0.95)';
+    x.shadowColor = 'rgba(239,68,68,0.8)';
+    x.shadowBlur = 14;
+    x.stroke();
+    x.shadowBlur = 0;
+    x.fillStyle = '#fca5a5';
+    x.textBaseline = 'middle';
+    x.fillText(label, bx + 17, by + bh / 2 + 1);
+    x.textBaseline = 'alphabetic';
+  }
   a.card.tex.needsUpdate = true;
 }
 
@@ -483,7 +582,8 @@ const GameState = {
   shake: 0,
   time: 0,
   paused: false,
-  shopPick: null      // locked rules offered this shop visit, per gender
+  shopPick: null,     // locked rules offered this shop visit, per gender
+  recoverySet: null   // names of the error-recovery words in the current round
 };
 
 /* streak tiers: every 5-streak bumps the bonus AND speeds the words up */
@@ -727,6 +827,7 @@ function spawnWord(word) {
     from: from, to: to,
     vel: to.clone().sub(from).divideScalar(totalFlight()),
     resolved: false, outcome: null, gone: false,
+    isRecovery: !!(GameState.recoverySet && GameState.recoverySet.has(word.w.toLowerCase())),
     card: card,
     article: null, articleT: 0,      // article glued to the left
     paint: null, paintGender: null,   // paint sweep { t, correct }
@@ -839,12 +940,21 @@ function showReveal(word, outcome) {
     const txt = word.note || 'No rule covers this word — memorize it with the article!';
     chip = '<div class="chip chip-exception"><div class="chip-title">NO RULE</div><div class="chip-text">' + esc(txt) + '</div></div>';
   }
+  let compound = '';
+  if (word.compound) {
+    const head = WORD_BY_NAME[(word.head || '').toLowerCase()];
+    if (head) {
+      compound = '<div class="reveal-compound">compound word — gender of ' +
+        '<span class="art art-' + head.g + '">' + head.g + '</span> ' + esc(head.w) + '</div>';
+    }
+  }
   const cls = outcome === 'correct' ? 'ok' : outcome === 'wrong' ? 'bad' : 'miss';
   ui.reveal.innerHTML =
     '<div class="reveal-card ' + cls + '">' +
       badge +
       '<div class="reveal-word"><span class="art art-' + word.g + '">' + word.g + '</span> ' + esc(word.w) + '</div>' +
       '<div class="reveal-en">' + esc(word.en) + '</div>' +
+      compound +
       chip +
     '</div>';
   show(ui.reveal, true);
@@ -864,6 +974,7 @@ function resolve(outcome, hitGender) {
   if (outcome === 'miss') {
     GameState.missed++;
     GameState.lastPoints = 0;
+    noteFailure(word);
     Sfx.miss();
     toast('MISSED', 'miss');
     showReveal(word, 'miss');
@@ -883,17 +994,19 @@ function resolve(outcome, hitGender) {
   if (outcome === 'correct') {
     GameState.streak++;
     GameState.roundStreak = Math.max(GameState.roundStreak, GameState.streak);
-    const pts = 1 + Math.floor(GameState.streak / 5);
+    const pts = (1 + Math.floor(GameState.streak / 5)) * (a.isRecovery ? 2 : 1);
     GameState.lastPoints = pts;
     GameState.correct++;
     GameState.roundCoins += pts;
     save.coins += pts;
     save.bestStreak = Math.max(save.bestStreak, GameState.streak);
+    clearFailure(word);
     persist();
   } else {
     GameState.streak = 0;
     GameState.wrong++;
     GameState.lastPoints = 0;
+    noteFailure(word);
   }
   updateHUD();
 }
@@ -909,6 +1022,9 @@ function celebrateHit() {
   floatScore(pos, '+' + GameState.lastPoints, G[word.g].color);
   Sfx.correct(GameState.streak);
   bumpCoins();
+  if (a.isRecovery) {
+    toast('ERROR RECOVERED — +' + GameState.lastPoints + ' (×2)', 'recovered');
+  }
   if (GameState.streak % 5 === 0) {
     toast('STREAK ×' + GameState.streak + ' — BONUS UP · SPEED UP', 'streak');
     Sfx.streakUp();
@@ -940,9 +1056,17 @@ function wrongExplode() {
 
 function startRound() {
   const pool = availablePool();
-  const noRule = shuffle(pool.filter(function (w) { return !w.rule; })).slice(0, CFG.maxNoRule);
-  const withRule = shuffle(pool.filter(function (w) { return w.rule; })).slice(0, CFG.roundWords - noRule.length);
-  GameState.queue = shuffle(withRule.concat(noRule));
+  /* error recovery: words the player failed recently are mixed back in —
+     getting them right this time is worth double */
+  const recovery = pickRecovery(pool);
+  const recSet = new Set();
+  recovery.forEach(function (w) { recSet.add(w.w.toLowerCase()); });
+  GameState.recoverySet = recSet;
+  const rest = pool.filter(function (w) { return !recSet.has(w.w.toLowerCase()); });
+  const noRuleCap = Math.max(0, CFG.maxNoRule - recovery.filter(function (w) { return !w.rule; }).length);
+  const noRule = shuffle(rest.filter(function (w) { return !w.rule; })).slice(0, noRuleCap);
+  const withRule = shuffle(rest.filter(function (w) { return w.rule; })).slice(0, CFG.roundWords - recovery.length - noRule.length);
+  GameState.queue = shuffle(recovery.concat(withRule, noRule));
   GameState.idx = 0;
   GameState.streak = 0;
   GameState.roundStreak = 0;
@@ -1013,8 +1137,34 @@ function rollShopPick() {
 }
 
 function renderShop() {
-  const allUnlocked = RULES.every(function (r) { return save.unlocked.indexOf(r.id) !== -1; });
+  const allRules = RULES.every(function (r) { return save.unlocked.indexOf(r.id) !== -1; });
+  const allLevels = WORD_LEVELS.every(function (lvl) {
+    return levelWordCount(lvl) === 0 || save.unlockedLevels.indexOf(lvl) !== -1;
+  });
   let html = '<div class="shop-head"><h2>RULE SHOP</h2><div class="shop-coins"><span class="coin"></span>' + save.coins + '</div></div>';
+
+  /* word levels: unlocked, next-to-unlock (purchasable) or locked */
+  const nextLvl = nextLockedLevel();
+  html += '<div class="shop-levels">';
+  for (const lvl of WORD_LEVELS) {
+    const count = levelWordCount(lvl);
+    if (!count) continue;
+    const unlocked = save.unlockedLevels.indexOf(lvl) !== -1;
+    const isNext = lvl === nextLvl;
+    html += '<div class="lvl' + (unlocked ? ' on' : isNext ? ' next' : '') + '">';
+    html += '<div class="lvl-name">' + lvl.toUpperCase() + '</div>';
+    html += '<div class="lvl-sub">' + count + ' WORDS</div>';
+    if (unlocked) {
+      html += '<div class="lvl-state">IN PLAY</div>';
+    } else if (isNext) {
+      html += '<button class="lvl-buy" data-level="' + lvl + '"' + (save.coins >= CFG.levelCost ? '' : ' disabled') + '>UNLOCK · ' + CFG.levelCost + '</button>';
+    } else {
+      html += '<div class="lvl-state">LOCKED</div>';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+
   html += '<p class="shop-offer">Fresh picks every visit — each gender offers up to 2 locked rules. Unlock one to reveal what it does.</p>';
   html += '<div class="shop-cols">';
   for (const gender of ['der', 'die', 'das']) {
@@ -1048,18 +1198,34 @@ function renderShop() {
   }
   html += '</div>';
   html += '<div class="shop-foot">';
-  html += allUnlocked
-    ? '<p class="shop-note">All rules unlocked — the full dictionary is in play.</p>'
+  html += (allRules && allLevels)
+    ? '<p class="shop-note">Everything unlocked — the full dictionary is in play.</p>'
     : '<p class="shop-note">New words join the pool from the next round.</p>';
+  html += '<div class="shop-actions">';
+  html += '<button id="btn-shop-reset" class="btn ghost" title="Back to the start: level a1, starting rules only, 0 coins">RESET TO A1</button>';
   html += '<button id="btn-shop-next" class="btn primary">START ROUND ' + (GameState.round + 1) + '</button>';
+  html += '</div>';
   html += '</div>';
   ui.shopBody.innerHTML = html;
 }
 
 ui.overlayShop.addEventListener('click', function (e) {
-  const buyBtn = e.target.closest ? e.target.closest('.buy') : null;
+  const t = e.target;
+  const lvlBtn = t.closest ? t.closest('.lvl-buy') : null;
+  if (lvlBtn) { buyLevel(lvlBtn.getAttribute('data-level')); return; }
+  const buyBtn = t.closest ? t.closest('.buy') : null;
   if (buyBtn) { buyRule(buyBtn.getAttribute('data-rule')); return; }
-  if (e.target.id === 'btn-shop-next' || (e.target.closest && e.target.closest('#btn-shop-next'))) {
+  if (t.id === 'btn-shop-reset' || (t.closest && t.closest('#btn-shop-reset'))) {
+    if (!window.confirm('Reset everything and start from scratch? (level a1, starting rules only, 0 coins)')) return;
+    if (!window.confirm('Really? Coins, rules, levels, streak records and the error-recovery list will be gone.')) return;
+    Sfx.click();
+    resetToStart();
+    renderShop();
+    updateHUD();
+    toast('RESET — LEVEL A1, FRESH START', 'miss');
+    return;
+  }
+  if (t.id === 'btn-shop-next' || (t.closest && t.closest('#btn-shop-next'))) {
     Sfx.click();
     nextRound();
   }
@@ -1100,8 +1266,12 @@ function showRulePopup(rule) {
 function renderMenu() {
   const pool = availablePool();
   const unlockedCount = RULES.filter(function (r) { return save.unlocked.indexOf(r.id) !== -1; }).length;
+  let maxLvl = 'a1';
+  for (const lvl of WORD_LEVELS) {
+    if (save.unlockedLevels.indexOf(lvl) !== -1) maxLvl = lvl;
+  }
   ui.menuStats.innerHTML =
-    '<b>' + save.coins + '</b> coins &nbsp;·&nbsp; <b>' + unlockedCount + '/' + RULES.length + '</b> rules unlocked &nbsp;·&nbsp; <b>' + pool.length + '</b> words in play<br>' +
+    '<b>' + save.coins + '</b> coins &nbsp;·&nbsp; level <b>' + maxLvl.toUpperCase() + '</b> &nbsp;·&nbsp; <b>' + unlockedCount + '/' + RULES.length + '</b> rules unlocked &nbsp;·&nbsp; <b>' + pool.length + '</b> words in play<br>' +
     (save.bestStreak ? 'best streak <b>×' + save.bestStreak + '</b> &nbsp;·&nbsp; ' : '') +
     (save.rounds ? 'rounds played <b>' + save.rounds + '</b>' : 'a fresh start');
 }
