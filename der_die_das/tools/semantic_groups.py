@@ -25,6 +25,8 @@ SEMANTIC_GROUPS = {
     # English verbs used as nouns, above all -ing forms (Cybermobbing inherits
     # from its head Mobbing, like compound members of other groups)
     'das_ing': {'Meeting', 'Recycling', 'Training', 'Mobbing', 'Online-Banking'},
+    # young persons & baby animals — only das Kind is in the dictionary for now
+    'das_baby': {'Kind'},
     # female persons incl. family names without -in — many break the
     # -er -> der ending rule (Mutter, Schwester)
     'die_female_persons': {'Frau', 'Mutter', 'Schwester', 'Tochter'},
@@ -51,7 +53,7 @@ SEMANTIC_GROUPS = {
         'Regisseur', 'Staatsanwalt', 'Student', 'Therapeut', 'Tourist',
         'Zahnarzt',
         # plain members (no -in test needed)
-        'Mann',
+        'Herr', 'Mann',
     },
 
     # days and dates — the -tag words are compounds of the head noun der Tag,

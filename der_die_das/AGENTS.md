@@ -63,7 +63,7 @@ Invariants (enforced by `tools/validate_words.py`):
 
 `id`, `gender`, `endings` (array, or `null` for non-ending rules), `formula` (short label, e.g. `-ung → die`), `description`, `cost` (shop price; ignored when `unlockedByDefault`), `unlockedByDefault`, optional `examples`. The shop auto-generates examples from non-exception words of the rule in words.js, so every rule should own words there. A semantic rule may carry `preferred: true` (used by `die_adjectival`) — this lets the semantic rule win the tie-break over an *agreeing* ending rule, so words like `Bekannte` show the adjectival rule chip instead of `-e → die`.
 
-Two kinds of rules (59 total: 30 ending + 29 semantic group rules):
+Two kinds of rules (61 total: 32 ending + 29 semantic group rules):
 
 - **ending rules** (`endings: [...]`) — 2 per gender unlocked from the start, the rest purchasable.
 - **semantic group rules** (`endings: null`) — noun categories ("drinks → der", "hotels → das", …). Membership is NOT stored in words.js — it lives in `tools/semantic_groups.py` (rule id → set of words). words.js only references the rule id.
