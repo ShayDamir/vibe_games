@@ -6,7 +6,7 @@ The German gender shooter: nouns fly at you through a 3D synthwave tunnel, you b
 
 - Three guns — `1` / tap = **der** (blue), `2` = **die** (pink), `3` = **das** (yellow). Shoot the word before it slips past.
 - Correct hit: the article glues onto the word, the word gets painted in the gender color, you earn coins. Wrong: the word explodes and the streak is lost. A miss costs nothing.
-- After every word a reveal card shows the translation and the gender rule — a rule chip, a red **EXCEPTION** chip, or a red **NO RULE** chip ("memorize it with the article"). Compound words additionally show which word they take the gender of, words with a `mnemo` show it in gold under the chip, and dual-gender words (`genders`) note that both articles are correct. The card stays up longer after a wrong answer or miss (5.5s vs 2.7s) so it can be read and memorized. Space pauses to read.
+- After every word a reveal card shows the translation and the gender rule — a rule chip, a red **EXCEPTION** chip, or a red **NO RULE** chip ("memorize it with the article") — except a rule-less word with a `mnemo` shows the mnemo itself as the chip, gender color coded, in place of NO RULE. Compound words additionally show which word they take the gender of, words with a `mnemo` (that have a rule) show it in gold under the chip, and dual-gender words (`genders`) note that both articles are correct. The card stays up longer after a wrong answer or miss (5.5s vs 2.7s) so it can be read and memorized. Space pauses to read.
 - Scoring: correct = `1 + floor(streak/5)` coins; every 5-streak also speeds the words up. Streak resets each round and on a wrong answer, so a perfect 20-word round pays exactly **54 coins** — use that as the unit when tuning shop prices.
 - Rounds: up to 20 unique words — never a duplicate in one round, shorter if the pool is small, and at most 3 rule-less words (`CFG.maxNoRule`).
 - Error recovery: the game keeps the last 10 failed words and mixes up to 3 of them into every round. Getting one right this time pays double coins, the card carries an ERROR RECOVERY badge, and the word leaves the list.
@@ -38,7 +38,7 @@ One object per word; required fields `w`, `g`, `en`:
 { w: 'kranken',    en: 'compound part: sick (der Kranke)', part: true },
 ```
 
-- `rule` — rule id from `rules.js` (ending rule or semantic group rule). **Optional**: a word without a rule is allowed (max 3 per round, revealed with the NO RULE chip).
+- `rule` — rule id from `rules.js` (ending rule or semantic group rule). **Optional**: a word without a rule is allowed (max 3 per round). It is revealed with the red NO RULE chip — unless it carries a `mnemo`, which then takes the chip's place (see `mnemo`).
 - `level` — CEFR level `a1…c2`. Optional; missing counts as `a1`. The round pool only draws from unlocked levels.
 - `exception: true` — the word breaks its rule (red chip); must carry a `note`. If the word matches an ending rule *and* a semantic group and both fail, the note must mention **both** rules (true exception).
 - `mnemo` — optional short memory hook (e.g. *Wasser*: "An element — like das Feuer, das Eis, das Gold."), shown in gold under the rule/exception chip. Not a rule — just an easy-to-memorize explanation; collect more as they're found.
@@ -63,7 +63,7 @@ Invariants (enforced by `tools/validate_words.py`):
 
 `id`, `gender`, `endings` (array, or `null` for non-ending rules), `formula` (short label, e.g. `-ung → die`), `description`, `cost` (shop price; ignored when `unlockedByDefault`), `unlockedByDefault`, optional `examples`. The shop auto-generates examples from non-exception words of the rule in words.js, so every rule should own words there. A semantic rule may carry `preferred: true` (used by `die_adjectival`) — this lets the semantic rule win the tie-break over an *agreeing* ending rule, so words like `Bekannte` show the adjectival rule chip instead of `-e → die`.
 
-Two kinds of rules (61 total: 32 ending + 29 semantic group rules):
+Two kinds of rules (62 total: 33 ending + 29 semantic group rules):
 
 - **ending rules** (`endings: [...]`) — 2 per gender unlocked from the start, the rest purchasable.
 - **semantic group rules** (`endings: null`) — noun categories ("drinks → der", "hotels → das", …). Membership is NOT stored in words.js — it lives in `tools/semantic_groups.py` (rule id → set of words). words.js only references the rule id.

@@ -939,11 +939,13 @@ function showReveal(word, outcome) {
     chip = '<div class="chip chip-exception"><div class="chip-title">EXCEPTION</div><div class="chip-text">' + esc(txt) + '</div></div>';
   } else if (rule) {
     chip = '<div class="chip chip-' + word.g + '"><div class="chip-title">' + esc(rule.formula) + '</div><div class="chip-text">' + esc(rule.description) + '</div></div>';
+  } else if (word.mnemo) {
+    chip = '<div class="chip chip-' + word.g + '"><div class="chip-title">MNEMONIC</div><div class="chip-text">' + esc(word.mnemo) + '</div></div>';
   } else {
     const txt = word.note || 'No rule covers this word — memorize it with the article!';
     chip = '<div class="chip chip-exception"><div class="chip-title">NO RULE</div><div class="chip-text">' + esc(txt) + '</div></div>';
   }
-  if (word.mnemo) {
+  if (word.mnemo && rule) {
     chip += '<div class="chip-mnemo"><span class="chip-mnemo-label">MNEMONIC</span>' + esc(word.mnemo) + '</div>';
   }
   let compound = '';

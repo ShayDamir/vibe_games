@@ -101,6 +101,15 @@ window.GENDER_RULES = [
     unlockedByDefault: false
   },
   {
+    id: 'der_ieg',
+    gender: 'der',
+    endings: ['ieg'],
+    formula: '-ieg → der',
+    description: 'Words ending in -ieg are masculine (der Krieg, der Sieg, der Abstieg, der Umstieg).',
+    cost: 25,
+    unlockedByDefault: false
+  },
+  {
     id: 'der_or',
     gender: 'der',
     endings: ['or'],
