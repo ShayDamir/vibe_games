@@ -9,3 +9,4 @@
 [x] add a button in the store to reset the local storage and start from scratch. Double-ask the user before doing that.
 [x] keep a list of last 10 player failures and mix up to 3 of them randomly into every round, giving double points if player gets them right this time (add ERROR RECOVERY label to the card) and remove them from the list
 [x] display the word level (A1, A2...) at the word card
+[x] words appear at a readable size already and grow as they approach (player complaint: unreadable on phones) — word-size setting S/M/L/XL in the menu and pause banner, persisted under der_die_das_settings_v1

@@ -5,6 +5,7 @@ The German gender shooter: nouns fly at you through a 3D synthwave tunnel, you b
 ## How the game works
 
 - Three guns — `1` / tap = **der** (blue), `2` = **die** (pink), `3` = **das** (yellow). Shoot the word before it slips past.
+- Word size: the sprite scale is set per-frame so the card measures a target CSS-pixel width — words already appear readable at spawn and grow (smoothstep) until they pass the player, instead of a fixed world size that looked tiny on phones. Absolute pixels (not a screen fraction) keep the size sane on both phones and wide desktops. The player picks S/M/L/XL in the menu or the pause banner; the setting persists separately from the save (see below), so a progress reset keeps it.
 - Correct hit: the article glues onto the word, the word gets painted in the gender color, you earn coins. Wrong: the word explodes and the streak is lost. A miss costs nothing.
 - After every word a reveal card shows the translation and the gender rule — a rule chip, a red **EXCEPTION** chip, or a red **NO RULE** chip ("memorize it with the article") — except a rule-less word with a `mnemo` shows the mnemo itself as the chip, gender color coded, in place of NO RULE. Compound words additionally show which word they take the gender of, words with a `mnemo` (that have a rule) show it in gold under the chip, and dual-gender words (`genders`) note that both articles are correct. The card stays up longer after a wrong answer or miss (5.5s vs 2.7s) so it can be read and memorized. Space pauses to read.
 - Scoring: correct = `1 + floor(streak/5)` coins; every 5-streak also speeds the words up. Streak resets each round and on a wrong answer, so a perfect 20-word round pays exactly **54 coins** — use that as the unit when tuning shop prices.
@@ -12,7 +13,7 @@ The German gender shooter: nouns fly at you through a 3D synthwave tunnel, you b
 - Error recovery: the game keeps the last 10 failed words and mixes up to 3 of them into every round. Getting one right this time pays double coins, the card carries an ERROR RECOVERY badge, and the word leaves the list.
 - Levels: the pool is gated by CEFR level — the game starts at a1, and a2/b1/b2 are unlocked in the shop for 160 coins each (≈ 3 perfect rounds). A level only shows up while it still has locked words to offer.
 - Rule Shop (between rounds): a fresh random offer of up to 2 locked rules per gender (ending rules 25/30 coins, semantic group rules 30 — two rules ≈ one perfect round). Unlocking a rule adds its words to the pool from the next round. The shop also has a RESET TO A1 button that wipes the save (coins, rules, levels, failure list) behind two confirmations.
-- Progress (coins, unlocked rules, unlocked levels, rounds played, best streak, failure list) persists in localStorage under `der_die_das_save_v1`.
+- Progress (coins, unlocked rules, unlocked levels, rounds played, best streak, failure list) persists in localStorage under `der_die_das_save_v1`. The word-size setting persists under `der_die_das_settings_v1`.
 
 ## Files
 

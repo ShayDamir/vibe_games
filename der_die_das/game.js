@@ -209,6 +209,36 @@ function persist() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* private mode */ }
 }
 
+/* ============================ settings ============================ */
+
+/* Word size: card width in CSS pixels at spawn and at the miss line —
+   it grows smoothly in between, so words are readable the moment they
+   appear and loom as they approach. Absolute pixels (not a screen
+   fraction) keep the physical size sane on phones AND wide desktop
+   screens; browser zoom scales it further. Stored separately from the
+   save so resetting progress keeps the player's preference. */
+const SETTINGS_KEY = 'der_die_das_settings_v1';
+const WORD_SIZES = [
+  { label: 'S',  start: 110, end: 200 },
+  { label: 'M',  start: 160, end: 300 },
+  { label: 'L',  start: 220, end: 420 },
+  { label: 'XL', start: 300, end: 580 }
+];
+let settings = { wordSize: 1 };
+try {
+  const raw = localStorage.getItem(SETTINGS_KEY);
+  if (raw) {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' &&
+        parsed.wordSize >= 0 && parsed.wordSize < WORD_SIZES.length) {
+      settings.wordSize = Math.floor(parsed.wordSize);
+    }
+  }
+} catch (e) { /* defaults */ }
+function persistSettings() {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* private mode */ }
+}
+
 /* ============================ audio ============================ */
 
 const Sfx = {
@@ -811,21 +841,40 @@ function totalFlight() {
   return CFG.flightTime * speedFactor() * (CFG.pastZ - CFG.startZ) / (CFG.missZ - CFG.startZ);
 }
 
+/* Words start readable and grow as they approach: the sprite's world size
+   is chosen each frame so the card measures px(t) CSS pixels wide at the
+   word's current distance (a fixed world size would appear a couple of
+   percent wide at spawn — unreadable on phones). */
+const TAN_HALF_FOV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+function wordScaleW(t) {
+  const s = WORD_SIZES[settings.wordSize];
+  const k = t * t * (3 - 2 * t); /* smoothstep: slow start, punch at the end */
+  const px = Math.min(s.start + (s.end - s.start) * k, window.innerWidth * 0.92);
+  const z = CFG.startZ + (CFG.pastZ - CFG.startZ) * t;
+  const d = Math.max(CFG.camZ - z, 3);
+  return px * 2 * d * TAN_HALF_FOV / window.innerHeight;
+}
+function applyWordScale(a, t) {
+  const sw = wordScaleW(t);
+  a.scaleW = sw;
+  a.sprite.scale.set(sw, sw * CARD_H / CARD_W, 1);
+}
+
 function spawnWord(word) {
   if (active) removeActive();
   const rule = RULE_BY_ID[word.rule];
   const card = createCard();
   const mat = new THREE.SpriteMaterial({ map: card.tex, transparent: true, depthWrite: false });
   const spr = new THREE.Sprite(mat);
-  const scaleW = 7.4;
-  spr.scale.set(scaleW, scaleW * CARD_H / CARD_W, 1);
+  const sw0 = wordScaleW(0);
+  spr.scale.set(sw0, sw0 * CARD_H / CARD_W, 1);
   spr.renderOrder = 20;
   const from = new THREE.Vector3(rand(-5, 5), rand(1.2, 3.2), CFG.startZ);
   const to = new THREE.Vector3(rand(-1.6, 1.6), rand(0.4, 1.6), CFG.pastZ);
   spr.position.copy(from);
   scene.add(spr);
   active = {
-    sprite: spr, word: word, rule: rule, age: 0,
+    sprite: spr, word: word, rule: rule, age: 0, scaleW: sw0,
     from: from, to: to,
     vel: to.clone().sub(from).divideScalar(totalFlight()),
     resolved: false, outcome: null, gone: false,
@@ -861,6 +910,7 @@ function updateActive(dt) {
     p.y += Math.sin(a.age * 2.2 + a.from.x) * 0.12 * (1 - t * 0.5);
     a.sprite.material.rotation = Math.sin(a.age * 1.6 + a.from.x * 2) * 0.05;
     a.sprite.material.opacity = Math.max(0, 1 - (p.z - CFG.missZ) / (CFG.pastZ - CFG.missZ));
+    applyWordScale(a, t);
     return;
   }
 
@@ -872,6 +922,7 @@ function updateActive(dt) {
     p.lerpVectors(a.from, a.to, t);
     p.y += Math.sin(a.age * 2.2 + a.from.x) * 0.12 * (1 - t * 0.5);
     a.sprite.material.rotation = Math.sin(a.age * 1.6 + a.from.x * 2) * 0.05;
+    applyWordScale(a, t);
     if (p.z >= CFG.missZ) resolve('miss', null);
     return;
   }
@@ -905,7 +956,7 @@ function updateActive(dt) {
   if (a.outcome === 'correct' && !a.paint) {
     a.holdT += dt;
     const pulse = 1 + Math.sin(a.holdT * 10) * 0.015;
-    a.sprite.scale.set(7.4 * pulse, 7.4 * (CARD_H / CARD_W) * pulse, 1);
+    a.sprite.scale.set(a.scaleW * pulse, a.scaleW * (CARD_H / CARD_W) * pulse, 1);
     const f = a.holdT - HOLD_TIME;
     if (f > 0) {
       a.sprite.material.opacity = Math.max(0, 1 - f / FADE_TIME);
@@ -1290,6 +1341,33 @@ function renderMenu() {
     (save.rounds ? 'rounds played <b>' + save.rounds + '</b>' : 'a fresh start');
 }
 
+/* ---- word-size setting: offered in the menu and on the pause banner
+       (so it can be tuned mid-round); applies to the next frame ---- */
+function renderSizeRows() {
+  ['size-menu', 'size-pause'].forEach(function (id) {
+    const el = $(id);
+    if (!el) return;
+    el.innerHTML = '<span class="size-label">WORD SIZE</span>' + WORD_SIZES.map(function (s, i) {
+      return '<button class="size-btn' + (i === settings.wordSize ? ' on' : '') +
+        '" data-size="' + i + '">' + s.label + '</button>';
+    }).join('');
+  });
+}
+function onSizeClick(e) {
+  const b = e.target && e.target.closest ? e.target.closest('.size-btn') : null;
+  if (!b) return;
+  const i = Number(b.getAttribute('data-size'));
+  if (i === settings.wordSize) return;
+  settings.wordSize = i;
+  persistSettings();
+  renderSizeRows();
+  Sfx.click();
+}
+['size-menu', 'size-pause'].forEach(function (id) {
+  const el = $(id);
+  if (el) el.addEventListener('click', onSizeClick);
+});
+
 $('btn-play').addEventListener('click', function () {
   Sfx.init();
   Sfx.resume();
@@ -1444,6 +1522,7 @@ if (document.fonts && document.fonts.ready) {
 }
 
 renderMenu();
+renderSizeRows();
 updateHUD();
 
 const clock = new THREE.Clock();
