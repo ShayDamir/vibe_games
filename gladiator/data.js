@@ -248,6 +248,32 @@ function weightedPick(opts) { // opts: [[key, weight], ...]
   return opts[opts.length - 1][0];
 }
 
+// ---- seedable RNG (reproducible battles / daily-arena challenge) ----
+// mulberry32: tiny, fast, good-enough PRNG. Seeding it makes every battle
+// deterministic — enemy generation, the foe AI and all combat rolls go through
+// the global rnd, so the same seed + same choices replay identically.
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    var t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+// FNV-1a: fold a string seed (e.g. a date like "2026-09-02") into 32 bits.
+function hashSeed(str) {
+  var h = 2166136261 >>> 0, i;
+  for (i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+// Reassign the global rnd to a seeded PRNG. A finite number is used as-is;
+// anything else is hashed. Returns the seeded function.
+function seedRng(seed) {
+  var a = (typeof seed === 'number' && isFinite(seed)) ? (seed | 0) : hashSeed(String(seed));
+  rnd = mulberry32(a);
+  return rnd;
+}
+
 // ------------------------------------------------ derived stats (player, from save)
 function maxHpOf() {
   var hp = 100 + (save.train.condition || 0) * 10;
@@ -291,6 +317,7 @@ function defaultSave() {
     relics: [],
     discovered: [],
     muted: false, seenIntro: false,
+    crowdVol: 1, // 0..1 — scales the crowd murmur + roars (the "reduce crowd volume" slider)
   };
 }
 var save = (function () {
@@ -301,6 +328,7 @@ var save = (function () {
     s.train = Object.assign({ condition: 0, footwork: 0, secondwind: 0, chanting: 0 }, s.train || {});
     s.scrolls = Object.assign(defaultSave().scrolls, s.scrolls || {});
     if (!Array.isArray(s.relics)) s.relics = [];
+    if (typeof s.crowdVol !== 'number') s.crowdVol = 1;
     return s;
   } catch (e) { return defaultSave(); }
 })();

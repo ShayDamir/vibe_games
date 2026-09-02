@@ -191,9 +191,11 @@ var Sfx = (function () {
       tone(392, { type: 'sawtooth', dur: 0.4, vol: 0.12, at: 0.0 });
       tone(523, { type: 'sawtooth', dur: 0.7, vol: 0.14, at: 0.42 });
     },
-    roar: function (big) { // crowd
-      noise({ dur: big ? 1.4 : 0.8, freq: 500, slide: 250, vol: big ? 0.3 : 0.18, rate: 0.5 });
-      noise({ dur: big ? 1.1 : 0.6, filter: 'bandpass', freq: 900, slide: 500, vol: big ? 0.14 : 0.07, q: 1, at: 0.1 });
+    roar: function (big) { // crowd (scaled by the crowd-volume slider)
+      var cv = (save && typeof save.crowdVol === 'number') ? clamp(save.crowdVol, 0, 1) : 1;
+      if (cv <= 0) return;
+      noise({ dur: big ? 1.4 : 0.8, freq: 500, slide: 250, vol: (big ? 0.3 : 0.18) * cv, rate: 0.5 });
+      noise({ dur: big ? 1.1 : 0.6, filter: 'bandpass', freq: 900, slide: 500, vol: (big ? 0.14 : 0.07) * cv, q: 1, at: 0.1 });
     },
     victory: function () {
       var seq = [523, 659, 784, 1047];
@@ -230,7 +232,20 @@ var Sfx = (function () {
 var Ambience = (function () {
   var ctx = null, master = null;
   var crowdGain = null, drumGain = null, drumTimer = null;
-  var crowdSrc = null;
+  var crowdSrc = null, crowdLfoGain = null;
+  var CROWD_BASE = 0.16, CROWD_LFO_BASE = 0.05; // the murmur level at 100% crowd volume
+  var _crowdVol = 1;                            // 0..1, set via setCrowdVolume
+
+  // scale the live crowd murmur (the battle drums are left untouched)
+  function applyCrowdVol() {
+    var v = clamp(_crowdVol, 0, 1);
+    if (crowdGain) crowdGain.gain.value = CROWD_BASE * v;
+    if (crowdLfoGain) crowdLfoGain.gain.value = CROWD_LFO_BASE * v;
+  }
+  function setCrowdVolume(v) {
+    _crowdVol = (typeof v === 'number') ? v : 1;
+    applyCrowdVol();
+  }
 
   function start() {
     if (crowdGain) return;
@@ -252,14 +267,15 @@ var Ambience = (function () {
     var f = ctx.createBiquadFilter();
     f.type = 'bandpass'; f.frequency.value = 420; f.Q.value = 0.6;
     crowdGain = ctx.createGain();
-    crowdGain.gain.value = 0.16;
+    crowdGain.gain.value = CROWD_BASE;
     var lfo = ctx.createOscillator();
     lfo.frequency.value = 0.13;
-    var lfoGain = ctx.createGain();
-    lfoGain.gain.value = 0.05;
-    lfo.connect(lfoGain); lfoGain.connect(crowdGain.gain);
+    crowdLfoGain = ctx.createGain();
+    crowdLfoGain.gain.value = CROWD_LFO_BASE;
+    lfo.connect(crowdLfoGain); crowdLfoGain.connect(crowdGain.gain);
     crowdSrc.connect(f); f.connect(crowdGain); crowdGain.connect(master);
     crowdSrc.start(); lfo.start();
+    applyCrowdVol();
 
     drumGain = ctx.createGain();
     drumGain.gain.value = 0;
@@ -300,8 +316,8 @@ var Ambience = (function () {
     master.gain.setTargetAtTime(0, ctx.currentTime, 0.6);
     var old = ctx;
     setTimeout(function () { try { old.close(); } catch (e) { /* noop */ } }, 2500);
-    ctx = null; master = null; crowdGain = null; drumGain = null; crowdSrc = null;
+    ctx = null; master = null; crowdGain = null; drumGain = null; crowdSrc = null; crowdLfoGain = null;
   }
 
-  return { start: start, setBattle: setBattle, stop: stop };
+  return { start: start, setBattle: setBattle, stop: stop, setCrowdVolume: setCrowdVolume };
 })();

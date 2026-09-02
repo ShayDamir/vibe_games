@@ -35,6 +35,14 @@ var Scene = (function () {
   // ---------- time ----------
   var timeScale = 1, timeScaleTarget = 1, slowmoUntil = 0;
 
+  // ---------- accessibility ----------
+  // respect the user's reduced-motion preference: skip slow-mo and camera shake
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (window.matchMedia) {
+    var _rmq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (_rmq.addEventListener) _rmq.addEventListener('change', function (e) { reducedMotion = e.matches; });
+  }
+
   // ---------- crowd ----------
   var crowdMesh = null, crowdData = [], cheer = 0;
 
@@ -1407,12 +1415,13 @@ var Scene = (function () {
   }
 
   function triggerSlowmo(scale, dur) {
+    if (reducedMotion) return;
     timeScaleTarget = scale || 0.25;
     slowmoUntil = performance.now() + (dur || 900);
   }
 
   // ---------- camera helpers ----------
-  function addShake(amt) { shake = Math.min(0.5, shake + amt); }
+  function addShake(amt) { if (!reducedMotion) shake = Math.min(0.5, shake + amt); }
 
   function flyCamera(from, to, dur, done) {
     fly = { from: from.clone(), to: to.clone(), t: 0, dur: dur, done: done || null };

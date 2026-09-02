@@ -30,6 +30,7 @@ var Game = (function () {
     myShield: null,        // the shield key at battle start (combat nulls it when it shatters)
     myShieldName: 'guard', // shield name at the start of the current round
     foeShieldName: 'guard',
+    seed: null,            // when set (via ?seed=), every battle re-seeds the RNG so it replays identically
   };
 
   var actionResolver = null; // resolves when the player picks a battle action
@@ -44,6 +45,19 @@ var Game = (function () {
   }
 
   function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+
+  // Read the optional ?seed= query param. A number is returned as a number,
+  // anything else as the decoded string (hashSeed folds it in seedRng).
+  function getSeedParam() {
+    try {
+      var m = /[?&]seed=([^&]+)/.exec(window.location.search || '');
+      if (m && m[1] !== '') {
+        var raw = decodeURIComponent(m[1]);
+        return (raw !== '' && !isNaN(raw) && isFinite(Number(raw))) ? Number(raw) : raw;
+      }
+    } catch (e) { /* private mode / no location */ }
+    return null;
+  }
 
   // A line that carries a bold token (<b>) is "pinned" — damage, combos,
   // shield breaks, events. Pinned lines are never collapsed. Between them the
@@ -103,6 +117,8 @@ var Game = (function () {
     });
     $('hud-battle').classList.toggle('on', name === 'battle');
     $('action-bar').classList.toggle('on', name === 'battle' && !state.busy && state.inBattle);
+    // keep the battle log readable on top of the result screen
+    $('log').classList.toggle('over-result', name === 'result');
   }
 
   function announcer(title, sub) {
@@ -443,6 +459,9 @@ var Game = (function () {
     state.logLoose = 0;
     state.rageShown = false;
     state.round = 0;
+
+    // seeded battle: re-seed every fight so the same seed replays identically
+    if (state.seed !== null) seedRng(state.seed);
 
     // a shattered shield can't be brought to the sand
     if (save.equipped.shield && (save.shieldDur[save.equipped.shield] || 0) <= 0) {
@@ -1256,6 +1275,11 @@ var Game = (function () {
       $('btn-mute').textContent = save.muted ? '🔇' : '🔊';
       Sfx.click();
     });
+    $('crowd-slider').addEventListener('input', function () {
+      save.crowdVol = clamp((Number(this.value) || 0) / 100, 0, 1);
+      persist();
+      Ambience.setCrowdVolume(save.crowdVol);
+    });
     $('btn-start').addEventListener('click', function () {
       save.seenIntro = true;
       persist();
@@ -1296,10 +1320,37 @@ var Game = (function () {
 
   // ---------- boot ----------
 
+  // If three.js never loaded (no internet / blocked CDN), scene.js couldn't
+  // build and Scene is gone. Rather than a dead canvas + console error, show a
+  // friendly overlay with a reload button and stop booting.
+  function showCdnError() {
+    var e = $('cdn-error');
+    if (e) e.classList.add('on');
+    var r = $('btn-reload');
+    if (r) r.addEventListener('click', function () { location.reload(); });
+  }
+
   function boot() {
+    if (typeof THREE === 'undefined' || typeof Scene === 'undefined' || typeof Scene.initScene !== 'function') {
+      showCdnError();
+      return;
+    }
+    // ?seed= → reproducible battles: re-seed the RNG now, and again at the start
+    // of every battle so a given seed replays identically.
+    var seed = getSeedParam();
+    if (seed !== null) {
+      state.seed = seed;
+      seedRng(seed);
+      var badge = $('seed-badge');
+      badge.textContent = '🎲 ' + seed;
+      badge.title = 'seeded RNG — every battle replays identically (seed: ' + seed + ')';
+      badge.hidden = false;
+    }
     Scene.initScene();
     Scene.buildPlayerView();
     $('btn-mute').textContent = save.muted ? '🔇' : '🔊';
+    $('crowd-slider').value = Math.round(clamp(save.crowdVol, 0, 1) * 100);
+    Ambience.setCrowdVolume(save.crowdVol);
     renderHub();
     wireInput();
     if (!save.seenIntro) $('intro').classList.add('on');

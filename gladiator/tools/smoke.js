@@ -65,7 +65,7 @@ global.location = { reload() {} };
 class Vector3 { constructor(x = 0, y = 0, z = 0) { this.x = x; this.y = y; this.z = z; } }
 global.THREE = { Vector3 };
 global.Sfx = new Proxy({}, { get: () => () => {} });
-global.Ambience = { start() {}, setBattle() {}, stop() {} };
+global.Ambience = { start() {}, setBattle() {}, stop() {}, setCrowdVolume() {} };
 const P = () => Promise.resolve();
 const moodCalls = [];
 const telegraphCalls = [];
@@ -362,6 +362,20 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
   assert(mRes.counters[0].dmg === mFoe.spellPower, 'mirror did not reflect the full spell power: ' + mRes.counters[0].dmg + ' vs ' + mFoe.spellPower);
   assert(mRes.combos.indexOf('mirrorward') !== -1, 'mirrorward combo not recorded');
   console.log('mirrorward OK');
+
+  // ---------- 8. seeded RNG: reproducible battles ----------
+  // same seed -> identical rng sequence and identical enemy generation, so a
+  // ?seed= battle replays exactly.
+  seedRng(20260902);
+  const sd1 = [rnd(), rnd(), rnd()].map((x) => x.toFixed(6)).join(',');
+  seedRng(20260902);
+  const sd2 = [rnd(), rnd(), rnd()].map((x) => x.toFixed(6)).join(',');
+  assert(sd1 === sd2, 'same seed must yield the same rng sequence');
+  const mkSeededFoe = (s) => { seedRng(s); return combat.makeEnemy(5); };
+  const fA = mkSeededFoe(5150), fB = mkSeededFoe(5150);
+  assert(fA.arch === fB.arch && fA.name === fB.name && fA.hp === fB.hp && fA.weapon === fB.weapon,
+    'same seed must generate the same enemy');
+  console.log('seed OK');
 
   // the log fold is a soft QoL check (like the mage tell): it only fires once a
   // battle accumulates >10 non-damage lines in a row, which long battles do.

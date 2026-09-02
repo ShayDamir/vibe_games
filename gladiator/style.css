@@ -68,6 +68,15 @@ html, body {
   text-shadow: 0 1px 3px #000;
 }
 #wins-streak { font-size: 14px; color: #cbb287; }
+#seed-badge {
+  font-size: 12.5px;
+  letter-spacing: 0.5px;
+  color: #cfa9ff;
+  background: var(--panel);
+  border: 1px solid rgba(150, 100, 255, 0.5);
+  border-radius: 7px;
+  padding: 3px 9px;
+}
 #coins {
   margin-left: auto;
   font-family: 'Cinzel', serif;
@@ -88,6 +97,47 @@ html, body {
   cursor: pointer;
 }
 #btn-mute:hover { border-color: var(--gold-bright); }
+
+/* crowd-volume slider (sits beside the mute button in the top HUD) */
+#crowd-vol {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--panel);
+  border: 1px solid rgba(201, 162, 39, 0.5);
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+#crowd-vol .cv-ico { font-size: 15px; }
+#crowd-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 88px;
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.25) 100%);
+  outline: none;
+  cursor: pointer;
+}
+#crowd-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  border: 1px solid #6a4a14;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+#crowd-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  border: 1px solid #6a4a14;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
 
 /* ------------------------------------------------ battle HUD */
 
@@ -370,6 +420,10 @@ html, body {
   mask-image: linear-gradient(180deg, transparent 0, #000 14px);
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14px);
 }
+/* over the result screen: float above the overlay so the battle can be re-read
+   (pointer-events stay none, so it never blocks the result buttons) */
+#log.over-result { z-index: 55; }
+#log.over-result .log-line { background: rgba(12, 8, 4, 0.82); }
 #log::-webkit-scrollbar { width: 4px; }
 #log::-webkit-scrollbar-thumb { background: rgba(201, 162, 39, 0.4); }
 .log-line {
@@ -476,6 +530,17 @@ html, body {
   padding: 20px;
 }
 .screen.on { display: flex; }
+
+/* no-network overlay: sits above every screen (incl. the intro) */
+#cdn-error { z-index: 100; }
+#cdn-error .game-title.warn {
+  background: linear-gradient(180deg, #ffd9cf 10%, #d0503a 60%, #7a2418);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+#cdn-error .cdn-msg { font-size: 15px; line-height: 1.55; color: #e2cfa4; margin-top: 16px; }
+#cdn-error .cdn-sub { font-size: 13.5px; color: #b99a5e; margin-top: 12px; }
 
 .card {
   width: min(760px, 94vw);
@@ -725,12 +790,37 @@ kbd {
 
 @media (max-width: 720px) {
   .fighter-panel { width: min(260px, 46vw); padding: 8px 10px; }
-  .act-btn { min-width: 78px; padding: 10px 12px 8px; font-size: 13px; }
-  .act-btn .ico { font-size: 16px; }
-  #log { width: 46vw; font-size: 12.5px; max-height: 26vh; bottom: 118px; }
-  #me-panel { bottom: 112px; }
-  #scroll-grid { grid-template-columns: repeat(4, 62px); }
-  .scroll-btn { height: 58px; font-size: 20px; }
+  /* touch layout: the six actions wrap into a 3x2 grid of big buttons so the
+     bar fits a phone screen instead of spilling off both edges. */
+  #action-bar.on {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+    width: min(94vw, 400px);
+    bottom: 16px;
+  }
+  .act-btn {
+    min-width: 0;
+    min-height: 56px;
+    padding: 8px 4px 12px;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  .act-btn[hidden] { display: none; }
+  .act-btn .ico { font-size: 19px; margin-bottom: 1px; }
+  .act-btn .key { display: none; }
+  .act-btn .cost { bottom: 3px; font-size: 9px; }
+  /* lift the log, the player panel and the scroll menu clear of the two-row bar */
+  #log { width: 44vw; font-size: 12px; max-height: 23vh; bottom: 152px; }
+  #me-panel { bottom: 152px; }
+  #scroll-menu { bottom: 150px; padding: 10px; }
+  /* bigger tap targets for the scroll grid */
+  #scroll-grid { grid-template-columns: repeat(4, 64px); gap: 8px; }
+  .scroll-btn { height: 64px; font-size: 22px; }
   #toast { width: 300px; }
   .card { padding: 20px 18px; }
 }

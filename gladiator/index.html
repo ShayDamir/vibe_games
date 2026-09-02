@@ -16,12 +16,29 @@
 <!-- fade-to-black overlay (player death cam) -->
 <div id="blackout"></div>
 
+<!-- shown if the three.js CDN is unreachable (no internet) -->
+<div class="screen" id="cdn-error">
+  <div class="card" style="width: min(540px, 92vw);">
+    <div class="game-title warn">⚠️ NO NETWORK</div>
+    <p class="cdn-msg">The Colosseum's 3D magic is fetched from the internet (three.js loads from a CDN). It didn't arrive, so the arena can't build itself — there's just sand and silence.</p>
+    <p class="cdn-sub">Check your connection, then reload the page.</p>
+    <div style="margin-top: 22px;">
+      <button class="big-btn" id="btn-reload">🔄 Reload</button>
+    </div>
+  </div>
+</div>
+
 <!-- top HUD -->
 <div id="hud-top">
   <span id="title-badge">Hooded Novice</span>
   <span id="wins-streak">0 wins · streak 0</span>
+  <span id="seed-badge" hidden></span>
   <span id="coins">0</span>
-  <button id="btn-mute" title="mute / unmute">🔊</button>
+  <label id="crowd-vol" title="crowd volume — how loud the arena crowd is (0–100%)">
+    <span class="cv-ico">📣</span>
+    <input type="range" id="crowd-slider" min="0" max="100" step="5" value="100" aria-label="crowd volume">
+  </label>
+  <button id="btn-mute" title="mute / unmute (all sound)">🔊</button>
 </div>
 
 <!-- battle HUD -->
