@@ -8,6 +8,7 @@ A collection of small, self-contained browser games. Everything is static: plain
 - One directory per game, each fully self-contained (HTML/CSS/JS/assets inside). Do not share code between games.
 - `flappy_bird_3d/`, `flappy_bird_fps/` — single-file games (everything in `index.html`).
 - `der_die_das/` — the German article shooter; bigger game with data files and Python tools. **Read `der_die_das/AGENTS.md` before working in that directory.**
+- `gladiator/` — first-person turn-based arena combat (multi-file: data/audio/scene/combat/game). **Read `gladiator/AGENTS.md` before working in that directory.**
 
 ## Running a game
 

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Last Gladiator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="game"></div>
+
+<!-- fade-to-black overlay (player death cam) -->
+<div id="blackout"></div>
+
+<!-- top HUD -->
+<div id="hud-top">
+  <span id="title-badge">Hooded Novice</span>
+  <span id="wins-streak">0 wins · streak 0</span>
+  <span id="coins">0</span>
+  <button id="btn-mute" title="mute / unmute">🔊</button>
+</div>
+
+<!-- battle HUD -->
+<div id="hud-battle">
+  <div id="round-ind">ROUND 1 / 25</div>
+  <div id="event-chip" hidden></div>
+
+  <div class="fighter-panel" id="foe-panel">
+    <div class="fighter-name"><span id="foe-name">—</span></div>
+    <div class="hp-bar"><div class="hp-fill" id="foe-hp-fill"></div><span class="hp-text" id="foe-hp-text">—</span></div>
+    <div class="st-bar" title="Foe stamina"><div class="st-fill" id="foe-st-fill"></div><span class="st-text" id="foe-st-text">—</span></div>
+    <div class="status-row" id="foe-status"></div>
+  </div>
+
+  <div class="fighter-panel" id="me-panel">
+    <div class="fighter-name">You</div>
+    <div class="hp-bar"><div class="hp-fill" id="me-hp-fill"></div><span class="hp-text" id="me-hp-text">—</span></div>
+    <div class="st-bar" title="Your stamina"><div class="st-fill" id="me-st-fill"></div><span class="st-text" id="me-st-text">—</span></div>
+    <div class="status-row" id="me-status"></div>
+  </div>
+</div>
+
+<!-- action bar -->
+<div id="action-bar">
+  <button class="act-btn" data-act="attack"><span class="key">A</span><span class="ico">⚔️</span>Attack<span class="cost" id="act-cost-attack">−10</span></button>
+  <button class="act-btn" data-act="dodge"><span class="key">D</span><span class="ico">💨</span>Dodge<span class="cost">−15</span></button>
+  <button class="act-btn" data-act="defend"><span class="key">S</span><span class="ico">🛡️</span>Defend<span class="cost">−8</span></button>
+  <button class="act-btn" data-act="cast"><span class="key">C</span><span class="ico">📜</span>Cast<span class="cost">−18</span></button>
+  <button class="act-btn chant" id="chant-btn" data-act="chant" hidden><span class="key">Q</span><span class="ico">🗣️</span>Chant<span class="cost gain">×1</span></button>
+  <button class="act-btn" data-act="rest"><span class="key">R</span><span class="ico">🌬️</span>Rest<span class="cost gain">+40</span></button>
+</div>
+
+<!-- scroll menu -->
+<div id="scroll-menu">
+  <div id="scroll-menu-hint"></div>
+  <div id="scroll-grid"></div>
+</div>
+
+<!-- battle log -->
+<div id="log"></div>
+
+<!-- discovery toast -->
+<div id="toast">
+  <div id="toast-icon">🔮</div>
+  <div>
+    <div id="toast-title">—</div>
+    <div id="toast-sub">—</div>
+  </div>
+</div>
+
+<!-- announcer -->
+<div id="announcer">
+  <div id="announcer-title">—</div>
+  <div id="announcer-sub">—</div>
+</div>
+
+<!-- hub screen -->
+<div class="screen" id="screen-hub">
+  <div class="card">
+    <div class="game-title">THE LAST GLADIATOR</div>
+    <div class="game-sub">Rome is a colosseum of sand, steel and secrets</div>
+    <div class="stat-row" id="hub-stats"></div>
+    <div class="gear-row" id="hub-gear"></div>
+    <div id="next-title"></div>
+    <div>
+      <button class="big-btn" id="btn-fight">⚔️ Enter the Arena</button>
+      <button class="big-btn ghost" id="btn-shop">🛡️ Armory</button>
+      <button class="big-btn ghost danger" id="btn-reset">Wipe Legend</button>
+    </div>
+  </div>
+</div>
+
+<!-- shop screen -->
+<div class="screen" id="screen-shop">
+  <div class="card">
+    <div class="game-title" style="font-size: 30px;">THE ARMORY</div>
+    <div id="shop-coins"></div>
+    <div id="shop-tabs"></div>
+    <div id="shop-body"></div>
+    <button class="big-btn" id="btn-shop-close">Done (Esc)</button>
+  </div>
+</div>
+
+<!-- result screen -->
+<div class="screen" id="screen-result">
+  <div class="card">
+    <div class="result-title win" id="result-title">—</div>
+    <div id="result-sub">—</div>
+    <p id="result-flavor">—</p>
+    <div id="result-extra"></div>
+    <div style="margin-top: 26px;">
+      <button class="big-btn" id="btn-continue">Back to the Camp (Enter)</button>
+      <button class="big-btn ghost" id="btn-laststand" hidden>⚔️ Last Stand — one final foe at half strength, for half the gold (L)</button>
+    </div>
+  </div>
+</div>
+
+<!-- intro -->
+<div class="screen" id="intro">
+  <div class="card">
+    <div class="game-title">THE LAST GLADIATOR</div>
+    <div class="game-sub">You bought your way out of the mines. Now you fight in the sand.</div>
+    <ul class="intro-bullets">
+      <li>⚔️ <b>Turn by turn:</b> every round you and your foe act at the same time. Attack, Dodge, Defend, Cast a scroll — or Rest.</li>
+      <li>🌬️ <b>Stamina is truth:</b> every action spends stamina, and you can see your foe's. When his bar runs low, his next move is written on his face — heavy arms are slow, fists are not.</li>
+      <li>🪙 <b>Earn coins,</b> buy better steel, train your body. Shields shatter — they are consumables. But losing <b>rewinds the sand</b>: a lost battle returns your shield and scrolls whole. Only wins consume.</li>
+      <li>🔮 <b>The arena keeps secrets:</b> hidden combos between magic, steel and armor. Find them, and they become your edge.</li>
+      <li>👑 <b>Every fifth foe is a Champion</b> — stronger, legendary, and capable of rage. Beat them to climb.</li>
+    </ul>
+    <div class="intro-keys">
+      <kbd>A</kbd> attack &nbsp; <kbd>D</kbd> dodge &nbsp; <kbd>S</kbd> defend &nbsp; <kbd>C</kbd> cast &nbsp; <kbd>R</kbd> rest &nbsp; <kbd>Esc</kbd> close
+    </div>
+    <div style="margin-top: 22px;">
+      <button class="big-btn" id="btn-start">Step Into the Arena</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="data.js"></script>
+<script src="audio.js"></script>
+<script src="scene.js"></script>
+<script src="combat.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
