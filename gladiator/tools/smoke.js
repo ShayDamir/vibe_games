@@ -95,6 +95,10 @@ eval(fs.readFileSync(path.join(ROOT, 'game.js'), 'utf8'));
 const sleep = (ms) => new Promise((r) => realSetTimeout(r, ms));
 const keydown = (k) => (winHandlers.keydown || []).forEach((fn) => fn({ key: k }));
 const assert = (cond, msg) => { if (!cond) throw new Error('ASSERT: ' + msg); };
+// deterministic input stream: the battle RNG is seeded per section (seedRng)
+// and the player's action picks come from their own PRNG, so a full smoke run
+// is reproducible — random play used to flake the "at least one victory" check
+const inputRnd = mulberry32(987654321);
 const logText = () => $id('log').children.map((c) => c._innerHTML || '').join('\n');
 let globalCollapsed = false; // set by playBattle when a '…' fold appears in any battle
 
@@ -138,7 +142,7 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
           await sleep(120);
           continue;
         }
-        const r = Math.random();
+        const r = inputRnd();
         keydown(r < 0.6 ? 'a' : r < 0.75 ? 'd' : r < 0.9 ? 's' : 'r');
       }
       await sleep(25);
@@ -147,6 +151,7 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
   }
 
   // ---------- 1. early battles + reward math + soft checks ----------
+  seedRng(20260907); // pin the battle RNG: enemy rolls, events and combat are replayable (this seed draws twice in the first 10 battles)
   save.weapons = ['fists', 'sword'];
   save.equipped.weapon = 'sword';
   let sawDefeat = false, sawEventChip = false, sawMageTell = false, sawCollapsed = false;
@@ -192,6 +197,15 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
       break;
     } else {
       assert(title === 'DRAW', 'unexpected result title ' + title);
+      // the split purse: a draw must pay at least the 25% floor (no damage,
+      // no arcana, no event, no titles) and never more than the full ceiling
+      // (0.7 base purse + 0.3 base spectacle + 25% crowd event, x1.1 titles)
+      const dr = save.coins - before;
+      const db = 24 + lv * 9;
+      assert(dr >= Math.round(db * 0.25) - 1, 'draw paid less than the 25% purse floor: ' + dr + ' (base ' + db + ')');
+      assert(dr <= Math.round(db * 1.0 * 1.25 * 1.1) + 2, 'draw paid more than the purse ceiling: ' + dr + ' (base ' + db + ')');
+      if (dr === 0) throw new Error('a draw paid zero — the split purse is dead');
+      console.log('draw purse OK (+' + dr + ' at level ' + lv + ')');
     }
     $id('btn-continue').dispatch('click');
   }

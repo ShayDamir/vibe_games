@@ -29,6 +29,7 @@ Backlog. Tick items off as they land (move under Done).
 
 ## Done
 
+- [x] **Split purse (draws pay)**: a 25-round stalemate no longer pays zero — the emperors divide the stakes: `base × (0.25 + 0.45 × damage dealt vs foe HP)` + spectacle bonus (+10% of base per arcana proc, max 3), then Crowd Favorite + title multipliers (last-stand draws halved). Breaks the high-level draw wall into a coin ramp: closer to the finish → bigger share → better gear → the finish lands. `state.dmgDealt`/`state.comboCount` in `game.js`, draw result screen shows the breakdown, smoke test asserts the purse band.
 - [x] Core loop: simultaneous turns, 4 actions, dots, 8 hidden combos, 4 archetypes + reactive AI, champions with rage.
 - [x] Economy: coins, weapons (7+6 legendary), armor, consumable shields with persistent durability, scroll satchel, 3 training tracks, 5 titles, 4 arena events.
 - [x] Presentation: three.js Colosseum (crowd, torches, gate, walk-in), first-person hands, full FX set, announcer, slow-mo, WebAudio SFX + crowd ambience.

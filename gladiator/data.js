@@ -220,9 +220,9 @@ var LOSE_FLAVOR = [
   'The surgeon’s saw is quick. Your legend is not over.',
 ];
 var DRAW_FLAVOR = [
-  'Neither man falls. The referee waves the flag of peace.',
-  'The crowd jeers. No winner, no gold — only the setting sun.',
-  'Twenty-five rounds and no blood. Rome is unimpressed, but you live.',
+  'Neither man falls. The emperors split the purse at the marble table.',
+  'Twenty-five rounds and no blood. The money-changer still counts you some gold.',
+  'The crowd is unimpressed by the stalemate — but the purse is not empty.',
 ];
 var ANNOUNCE_NORMAL = [
   'The sand awaits.',

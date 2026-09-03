@@ -23,6 +23,8 @@ var Game = (function () {
     chantUsed: false,
     flaskUsed: false,
     lowHpEver: false,
+    dmgDealt: 0,        // damage dealt to the foe this battle (drives the split purse on a draw)
+    comboCount: 0,      // arcana procs this battle (the spectacle bonus on a draw)
     logLoose: 0,
     lastStand: false,
     rageShown: false,
@@ -244,7 +246,19 @@ var Game = (function () {
   }
 
   function noteCombos(res) {
-    if (res && res.combos) res.combos.forEach(discoverCombo);
+    if (res && res.combos) {
+      state.comboCount += res.combos.length; // spectacle: every proc the crowd sees
+      res.combos.forEach(discoverCombo);
+    }
+  }
+
+  // Every point of damage the player deals this battle is banked for the
+  // split purse: on a draw, Rome pays a share of the stakes sized by how
+  // close the player came to finishing the foe.
+  function bankDamage(res) {
+    if (!res) return;
+    state.dmgDealt += res.dmg || 0;
+    if (res.counters) res.counters.forEach(function (c) { state.dmgDealt += c.dmg || 0; });
   }
 
   // ---------- hub ----------
@@ -456,6 +470,8 @@ var Game = (function () {
     state.chantUsed = false;
     state.flaskUsed = false;
     state.lowHpEver = false;
+    state.dmgDealt = 0;
+    state.comboCount = 0;
     state.logLoose = 0;
     state.rageShown = false;
     state.round = 0;
@@ -550,6 +566,7 @@ var Game = (function () {
         $('action-bar').classList.remove('on');
         combat.payAction(me, 'cast');
         var chantRes = combat.resolveSpell(me, foe, playerAction.element);
+        bankDamage(chantRes);
         logLine('🗣️ You chant the ' + SCROLLS[playerAction.element].name + ' — your action is intact.', 'log-me');
         await playPlayerSpell(playerAction.element, chantRes);
         noteCombos(chantRes);
@@ -595,6 +612,7 @@ var Game = (function () {
       if (fAtk) fRes = combat.resolveAttack(foe, me, ctx);
       else if (foeAction.type === 'cast') fRes = combat.resolveFoeSpell(foe, me, foeAction.spell);
       state.whetUsed = ctx.whetUsed;
+      bankDamage(pRes); // the foe's blows are not banked — only what you deal
 
       // ---- animate (player first, then the foe) ----
       if (pRes) { await playPlayerAction(playerAction, pRes); updatePanels(); }
@@ -640,6 +658,7 @@ var Game = (function () {
       var dots = combat.tickDots();
       for (var i = 0; i < dots.length; i++) {
         var d = dots[i];
+        if (d.who === 'foe') state.dmgDealt += d.dmg; // your fire and venom keep working
         if (d.who === 'foe') {
           Scene.fxHitFoe('light');
           Scene.floatWorld('-' + d.dmg + ' ' + d.kind, new THREE.Vector3(0, 1.2, Scene.enemyPos()), d.kind === 'burn' ? '#ff9040' : '#8fd060');
@@ -1144,6 +1163,28 @@ var Game = (function () {
     } else {
       save.draws++;
       rewound = rewindConsumables();
+      // The split purse: nobody fell, so the emperors divide the stakes. The
+      // player's share grows with how close he came — damage dealt vs the
+      // foe's full HP — plus a spectacle bonus for every arcana the crowd
+      // saw. This turns the stalemate wall (foe HP outgrows the best steel)
+      // into a slow climb: bigger share -> better gear -> the finish lands.
+      var level = battleLevel();
+      var base = 24 + level * 9;
+      var closeness = clamp(state.dmgDealt / Math.max(1, foe.maxHp), 0, 1);
+      var purse = Math.round(base * (0.25 + 0.45 * closeness));
+      var showman = Math.min(3, state.comboCount);
+      var showBonus = showman ? Math.round(base * 0.1 * showman) : 0;
+      var crowdBonus = state.event === 'crowdgold' ? Math.round((purse + showBonus) * 0.25) : 0;
+      var mult = coinsMult();
+      reward = Math.round((purse + showBonus + crowdBonus) * mult);
+      var wasLastStand = state.lastStand;
+      if (wasLastStand) reward = Math.floor(reward / 2);
+      save.coins += reward;
+      if (wasLastStand) breakdown.push('⚔️ last stand (half gold)');
+      breakdown.push('🤝 split purse ' + purse + ' · ' + Math.round(closeness * 100) + '% of his blood taken');
+      if (showBonus) breakdown.push('👏 spectacle +' + showBonus + ' (arcana ×' + showman + ')');
+      if (crowdBonus) breakdown.push('🎲 crowd favorite +' + crowdBonus);
+      if (mult > 1) breakdown.push('🏅 title ×' + mult.toFixed(2));
     }
     state.lastRewound = rewound > 0;
     var battleWasLastStand = state.lastStand;
@@ -1166,7 +1207,8 @@ var Game = (function () {
       if (rewound) logLine('⏪ The sand rewinds — your shield stands whole again, your scrolls are back in the satchel.', 'log-event');
     } else {
       Sfx.draw();
-      logLine('🤝 The flag of peace waves. No blood, no gold.', 'log-event');
+      if (reward > 0) Sfx.coin();
+      logLine('🤝 The flag of peace waves — no blood. The emperors split the purse.', 'log-event');
       if (rewound) logLine('⏪ The sand rewinds — your shield stands whole again, your scrolls are back in the satchel.', 'log-event');
     }
 
@@ -1180,7 +1222,7 @@ var Game = (function () {
     if (kind === 'win') { title = 'VICTORY'; cls = 'win'; flavor = pick(WIN_FLAVOR); sub = 'You defeat ' + combat.foe.name; }
     else if (kind === 'mutual') { title = 'MUTUAL SLAUGHTER — YOU LIVE'; cls = 'win'; flavor = 'You both hit the sand. The referee sees you up first. The crowd gives you the gold and the glory.'; sub = 'Together you fell — together you rose first'; }
     else if (kind === 'lose') { title = 'DEFEAT'; cls = 'lose'; flavor = pick(LOSE_FLAVOR); sub = combat.foe.name + ' stands over you'; }
-    else { title = 'DRAW'; cls = 'draw'; flavor = pick(DRAW_FLAVOR); sub = 'No winner, no gold'; }
+    else { title = 'DRAW'; cls = 'draw'; flavor = pick(DRAW_FLAVOR); sub = 'No winner — Rome splits the purse'; }
 
     $('result-title').textContent = title;
     $('result-title').className = 'result-title ' + cls;
@@ -1189,7 +1231,7 @@ var Game = (function () {
 
     var extra = $('result-extra');
     extra.innerHTML = '';
-    if (kind === 'win' || kind === 'mutual') {
+    if (kind === 'win' || kind === 'mutual' || kind === 'draw') {
       var r = el('div', 'reward');
       r.appendChild(el('div', 'reward-total', '🪙 +' + fmt(reward)));
       r.appendChild(el('div', 'reward-breakdown', breakdown.join(' · ')));
