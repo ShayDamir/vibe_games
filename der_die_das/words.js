@@ -104,7 +104,8 @@ window.GERMAN_WORDS = [
   /* ------------------- NO RULE (no ending explains it) ------------------- */
   { w: 'Haus',          g: 'das', en: 'house', rule: 'der_us', exception: true,
     note: 'Classic trap: -us → der — but it is das Haus. Memorize it with the article!' },
-  { w: 'Hund',          g: 'der', en: 'dog' },
+  { w: 'Hund',          g: 'der', en: 'dog',
+    mnemo: 'The male dog is der Hund; the female is die Hündin — the -in suffix is the "woman" badge.' },
   { w: 'Stadt',         g: 'die', en: 'city' },
   { w: 'Hand',          g: 'die', en: 'hand' },
 
@@ -256,7 +257,8 @@ window.GERMAN_WORDS = [
   { w: 'Supermarkt',                 g: 'der', en: 'supermarket', level: 'a1', compound: true, head: 'Markt' },
   { w: 'Geschäft',                   g: 'das', en: 'shop', level: 'a1' },
   { w: 'Polizei',                    g: 'die', en: 'police', level: 'a1', rule: 'die_ei' },
-  { w: 'Ampel',                      g: 'die', en: 'traffic light', level: 'a1' },
+  { w: 'Ampel',                      g: 'die', en: 'traffic light', level: 'a1',
+    mnemo: 'Cross on red and you DIE.' },
   { w: 'Brücke',                     g: 'die', en: 'bridge', level: 'a1', rule: 'die_e' },
   { w: 'Platz',                      g: 'der', en: 'square', level: 'a1' },
   { w: 'Zentrum',                    g: 'das', en: 'centre', level: 'a1', rule: 'das_um' },
