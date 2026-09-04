@@ -62,7 +62,7 @@ var SHIELDS = {
   wooden: { name: 'Wooden Shield', icon: '🪵', dur: 3, cost: 15, desc: 'Full block. Weapon strikes chip it. 3 uses.' },
   iron:   { name: 'Iron Shield',   icon: '🛡️', dur: 5, cost: 40, desc: 'Full block. Weapon strikes chip it. 5 uses.' },
   tower:  { name: 'Tower Shield', icon: '🏰', dur: 4, cost: 90, desc: 'Full block. Weapon strikes chip it. 4 uses. Blocks hit back (see Arcana).' },
-  aegis:  { name: 'Tortoise Aegis', icon: '🐢', dur: 6, cost: 420, leg: true, desc: 'LEGENDARY · Full block, 6 uses. Slow to lift, unbreakable: every successful block steadies you — +25% dodge for 2 rounds.' },
+  aegis:  { name: 'Tortoise Aegis', icon: '🐢', dur: 3, cost: 420, leg: true, desc: 'LEGENDARY · Full block, 3 blocks per battle. Slow to lift, unkillable — it shatters in the sand and reforms whole before your next fight. Every successful block steadies you: +25% dodge for 2 rounds.' },
 };
 
 // ------------------------------------------------ relics
@@ -156,6 +156,54 @@ var COMBOS = {
   },
 };
 var COMBO_ORDER = ['iceShatter', 'conductor', 'dragonfire', 'warded', 'jab', 'ram', 'boil', 'ironcalm', 'cauterize', 'featherfall', 'mirrorward', 'heartsand'];
+
+// ------------------------------------------------ gear sets ("bonds")
+// A matching weapon + armor pair grants a hidden PASSIVE bonus (unlike the
+// arcana above, which proc on events). The point: give outclassed gear a second
+// life — a bonded mid-tier kit that stands with a higher one. Player-only (foes
+// never bond). Hidden like arcana: the codex shows ❓ until the pair is first
+// equipped together ("forged"), which fires a toast + Sfx.discover.
+// `bonus` fields are declarative and applied by combat.js freshFighter():
+//   maxHp (flat) · dmgFlat (flat dmg) · dmgPct (% dmg) · reduction (% less taken)
+//   dodge (% passive evasion) · atkCost (flat, applied in actionCost)
+var SETS = {
+  brawler: {
+    weapon: 'fists', armor: 'leather',
+    name: 'Bare-Knuckle Brawler', icon: '✊',
+    how: 'Fight with your bare fists while wearing Leather Armor.',
+    msg: 'Fists and soft leather make a storm: +12% dodge, and your bare-knuckle attacks cost 3 less stamina.',
+    bonus: { dodge: 12, atkCost: -3 },
+  },
+  skirmisher: {
+    weapon: 'club', armor: 'leather',
+    name: 'Oak Skirmisher', icon: '🏏',
+    how: 'Swing a Wooden Club while wearing Leather Armor.',
+    msg: 'A chunk of oak and light hide — the club punches above its weight: +5 damage and +6% dodge.',
+    bonus: { dmgFlat: 5, dodge: 6 },
+  },
+  vanguard: {
+    weapon: 'sword', armor: 'iron',
+    name: 'Iron Vanguard', icon: '⚔️',
+    how: 'Wield an Iron Sword while wearing Iron Plate.',
+    msg: 'An honest blade and a knight’s plate: +6 damage, +15 max HP, and 10% less damage on top of the plate.',
+    bonus: { dmgFlat: 6, maxHp: 15, reduction: 10 },
+  },
+  channeler: {
+    weapon: 'staff', armor: 'magic',
+    name: 'Rune Channeler', icon: '🪄',
+    how: 'Carry an Oak Staff while wearing the Enchanted Robe.',
+    msg: 'The staff hums with the robe’s magic: +4 damage and +10 max HP while the runes course through your arms.',
+    bonus: { dmgFlat: 4, maxHp: 10 },
+  },
+  crusher: {
+    weapon: 'hammer', armor: 'dragon',
+    name: 'Dragon Crusher', icon: '🔨',
+    how: 'Raise an Iron Hammer while wearing Dragon Hide.',
+    msg: 'Dragon scales over a hammer fist: +3 damage, 8% less damage taken and +10 max HP — a wall that swings back.',
+    bonus: { dmgFlat: 3, reduction: 8, maxHp: 10 },
+  },
+};
+var SET_ORDER = ['brawler', 'skirmisher', 'vanguard', 'channeler', 'crusher'];
 
 // ------------------------------------------------ titles (vertical milestones, auto-earned by wins)
 var TITLES = [
@@ -296,6 +344,15 @@ function coinsMult() {
   TITLES.forEach(function (t) { if (save.wins >= t.wins && t.coinsPct) m += t.coinsPct / 100; });
   return m;
 }
+// The gear set ("bond") currently forged by the equipped weapon + armor, or null.
+function activeSetKey() {
+  var w = save.equipped.weapon, a = save.equipped.armor;
+  for (var i = 0; i < SET_ORDER.length; i++) {
+    var k = SET_ORDER[i];
+    if (SETS[k].weapon === w && SETS[k].armor === a) return k;
+  }
+  return null;
+}
 function currentTitle() {
   var t = null;
   TITLES.forEach(function (x) { if (save.wins >= x.wins) t = x; });
@@ -316,6 +373,7 @@ function defaultSave() {
     train: { condition: 0, footwork: 0, secondwind: 0, chanting: 0 },
     relics: [],
     discovered: [],
+    discoveredSets: [],
     muted: false, seenIntro: false,
     crowdVol: 1, // 0..1 — scales the crowd murmur + roars (the "reduce crowd volume" slider)
   };
@@ -328,6 +386,7 @@ var save = (function () {
     s.train = Object.assign({ condition: 0, footwork: 0, secondwind: 0, chanting: 0 }, s.train || {});
     s.scrolls = Object.assign(defaultSave().scrolls, s.scrolls || {});
     if (!Array.isArray(s.relics)) s.relics = [];
+    if (!Array.isArray(s.discoveredSets)) s.discoveredSets = [];
     if (typeof s.crowdVol !== 'number') s.crowdVol = 1;
     return s;
   } catch (e) { return defaultSave(); }

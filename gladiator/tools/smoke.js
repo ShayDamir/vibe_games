@@ -112,8 +112,7 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
   // the battle. The log trims at 46 lines, so an early event (round-1 chant,
   // an early phial heal) is gone from #log by the end of a long fight; we
   // must observe it live, not read the final log.
-  async function playBattle(useChant) {
-    $id('btn-fight').dispatch('click');
+  async function playCurrentBattle(useChant) {
     const t0 = Date.now();
     let chantUsed = false, sawChantLine = false, sawPhial = false, sawNaN = false, sawCollapsed = false;
     while (Date.now() - t0 < 60000) {
@@ -148,6 +147,12 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
       await sleep(25);
     }
     throw new Error('battle did not end in 60 s');
+  }
+
+  // start a battle from the hub, then play it out
+  async function playBattle(useChant) {
+    $id('btn-fight').dispatch('click');
+    return playCurrentBattle(useChant);
   }
 
   // ---------- 1. early battles + reward math + soft checks ----------
@@ -286,9 +291,10 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
   assert(r4.chant, 'chant was not available in a fresh battle (chantUsed not reset)');
   $id('btn-continue').dispatch('click');
 
-  // ---------- 5. Tortoise Aegis: a successful block steadies the bearer ----------
+  // ---------- 5. Tortoise Aegis: blocks steady the bearer, the 3rd block shatters it, ----------
+  // ---------- and it reforms whole (re-equipping itself) before the next battle ----------
   save.shields = save.shields.concat(['aegis']);
-  save.shieldDur.aegis = 6;
+  save.shieldDur.aegis = 3;
   save.equipped.shield = 'aegis';
   save.equipped.weapon = 'sword';
   combat.reset();
@@ -296,14 +302,34 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
   combat.setFoe(aegisFoe);
   const meA = combat.me;
   const baseDodge = combat.dodgeChance(meA);
-  meA.state.frozen = 1;      // a frozen fighter cannot dodge — the block is guaranteed
+  const aegisBlock = (round) => {
+    meA.state.frozen = 1;    // a frozen fighter cannot dodge — the block is guaranteed
+    const r = combat.resolveAttack(aegisFoe, meA, { round: round, event: null, firstStriker: 'foe', whetUsed: true });
+    meA.state.frozen = 0;
+    return r;
+  };
   meA.defending = true;
-  combat.resolveAttack(aegisFoe, meA, { round: 1, event: null, firstStriker: 'foe', whetUsed: true });
-  meA.state.frozen = 0;
+  aegisBlock(1);
   assert(meA.state.aegis === 2, 'aegis block did not grant the steady, got ' + meA.state.aegis);
   assert(combat.dodgeChance(meA) === Math.min(95, baseDodge + 25), 'aegis steady missing from the dodge roll: ' + combat.dodgeChance(meA) + ' vs base ' + baseDodge);
+  assert(meA.shieldDur === 2, 'aegis block did not chip a use, got ' + meA.shieldDur);
   combat.tickDots();
   assert(meA.state.aegis === 1, 'aegis steady did not decay');
+  aegisBlock(2);
+  const aegisBroken = aegisBlock(3);
+  assert(aegisBroken.shieldBroken === true, 'aegis did not shatter on its 3rd block');
+  assert(meA.shield === null, 'shattered aegis still in hand');
+  // the shatter handler zeroes the save and unequips — the next startBattle must reform it
+  save.shieldDur.aegis = 0;
+  save.equipped.shield = null;
+  Game.startBattle();
+  assert(save.shieldDur.aegis === SHIELDS.aegis.dur, 'aegis did not reform at battle start, got ' + save.shieldDur.aegis);
+  assert(save.equipped.shield === 'aegis', 'shattered aegis did not re-equip for the next battle');
+  // the battle startBattle opened still needs playing out
+  const r5 = await playCurrentBattle(false);
+  assert(r5.title === 'VICTORY' || r5.title === 'DEFEAT' || r5.title === 'DRAW' || r5.title === 'MUTUAL SLAUGHTER — YOU LIVE', 'unexpected title ' + r5.title);
+  if (r5.nan) throw new Error('NaN leaked into the aegis battle log');
+  $id('btn-continue').dispatch('click');
   console.log('aegis OK');
 
   // ---------- 6. the healer's phial: auto-heal below 30% ----------
@@ -374,8 +400,53 @@ let globalCollapsed = false; // set by playBattle when a '…' fold appears in a
   assert(mRes.blocked, 'mirror ward test: the spell was not blocked');
   assert(mRes.counters.length === 1 && mRes.counters[0].reason === 'mirror', 'mirror counter missing');
   assert(mRes.counters[0].dmg === mFoe.spellPower, 'mirror did not reflect the full spell power: ' + mRes.counters[0].dmg + ' vs ' + mFoe.spellPower);
-  assert(mRes.combos.indexOf('mirrorward') !== -1, 'mirrorward combo not recorded');
-  console.log('mirrorward OK');
+    assert(mRes.combos.indexOf('mirrorward') !== -1, 'mirrorward combo not recorded');
+    console.log('mirrorward OK');
+
+  // ---------- 7b. gear sets ("bonds"): passive weapon + armor bonuses ----------
+  // For every set: rebuild the fighter WITHOUT the bonded armor (the baseline),
+  // then WITH it, and verify the declarative bonus folded in exactly. The
+  // baseline comparison keeps this independent of titles/training. Foes never bond.
+  const eqBefore = { weapon: save.equipped.weapon, armor: save.equipped.armor };
+  SET_ORDER.forEach((k) => {
+    const s = SETS[k];
+    const b = s.bonus || {};
+    save.equipped.weapon = s.weapon;
+    save.equipped.armor = null;
+    combat.reset();
+    const base = combat.me;
+    assert(base.set === null, 'a set was active without the bonded armor (' + k + ')');
+    assert(activeSetKey() === null, 'activeSetKey not null for ' + s.weapon + ' + no armor');
+    save.equipped.armor = s.armor;
+    assert(activeSetKey() === k, 'activeSetKey should be ' + k + ' for ' + s.weapon + '+' + s.armor + ', got ' + activeSetKey());
+    combat.reset();
+    const me = combat.me;
+    assert(me.set === k, 'fighter.set not tagged with ' + k);
+    const expDmg = (base.dmgBase + (b.dmgFlat || 0)) * (1 + (b.dmgPct || 0) / 100);
+    assert(Math.abs(me.dmgBase - expDmg) < 0.001, k + ': dmgBase expected ' + expDmg + ' got ' + me.dmgBase);
+    const expRed = ARMORS[s.armor].reduction + (b.reduction || 0);
+    assert(me.reduction === expRed, k + ': reduction expected ' + expRed + ' got ' + me.reduction);
+    const expDodge = clamp(baseDodgeOf() + ARMORS[s.armor].dodge + (b.dodge || 0), 5, 95);
+    assert(Math.abs(me.dodgeBase - expDodge) < 0.001, k + ': dodgeBase expected ' + expDodge + ' got ' + me.dodgeBase);
+    if (b.maxHp) assert(me.maxHp === base.maxHp + b.maxHp, k + ': maxHp expected ' + (base.maxHp + b.maxHp) + ' got ' + me.maxHp);
+    if (b.atkCost) {
+      const expCost = Math.max(1, STAMINA.attackByTier[WEAPONS[s.weapon].tier] + b.atkCost);
+      assert(combat.actionCost(me, 'attack') === expCost, k + ': attack cost expected ' + expCost + ' got ' + combat.actionCost(me, 'attack'));
+    }
+  });
+  // a pair that is not a set forges nothing
+  save.equipped.weapon = 'fists';
+  save.equipped.armor = 'iron'; // fists + iron is no set
+  assert(activeSetKey() === null, 'fists + iron should not forge a set, got ' + activeSetKey());
+  combat.reset();
+  assert(combat.me.set === null, 'a non-set pair tagged the fighter with a set');
+  // foes never bond, even if their gear happens to match a set
+  let foeBonded = false;
+  for (let i = 0; i < 300 && !foeBonded; i++) { if (combat.makeEnemy(12).set) foeBonded = true; }
+  assert(!foeBonded, 'an enemy fighter gained a gear-set bond');
+  save.equipped.weapon = eqBefore.weapon;
+  save.equipped.armor = eqBefore.armor;
+  console.log('gear sets OK (' + SET_ORDER.length + ' bonds verified)');
 
   // ---------- 8. seeded RNG: reproducible battles ----------
   // same seed -> identical rng sequence and identical enemy generation, so a

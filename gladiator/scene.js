@@ -434,36 +434,65 @@ var Scene = (function () {
       g.add(mesh);
       return mesh;
     }
+    var steel = new THREE.MeshLambertMaterial({ color: 0xd8e0e8 });
     var B = function (ww, hh, dd, mat) { var b = new THREE.Mesh(new THREE.BoxGeometry(ww, hh, dd), mat); b.castShadow = true; return b; };
     var C = function (rt, rb, hh, mat, seg) { var b = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, hh, seg || 8), mat); b.castShadow = true; return b; };
+    var cone = function (rr, hh, mat, seg) { var c = new THREE.Mesh(new THREE.ConeGeometry(rr, hh, seg || 6), mat); c.castShadow = true; return c; };
+    var gripMat = w.leg ? em : wood;
     switch (key) {
       case 'fists': break;
       case 'club': case 'stormclub':
         add(C(0.045, 0.06, 0.95, w.leg ? em : wood), 0, -0.45, 0);
-        add(C(0.09, 0.11, 0.3, w.leg ? em : wood), 0, -0.95, 0);
+        add(B(0.09, 0.11, 0.3, w.leg ? em : wood), 0, -0.95, 0);
+        // spikes around the head so it reads as a mace, not a broom
+        var sp = cone(0.022, 0.08, w.leg ? em : steel);
+        sp.position.set(0.05, -0.95, 0); sp.rotation.z = -Math.PI / 2; g.add(sp);
+        var sp2 = cone(0.022, 0.08, w.leg ? em : steel);
+        sp2.position.set(-0.05, -0.95, 0); sp2.rotation.z = Math.PI / 2; g.add(sp2);
+        var sp3 = cone(0.022, 0.08, w.leg ? em : steel);
+        sp3.position.set(0, -0.95, 0.17); sp3.rotation.x = Math.PI / 2; g.add(sp3);
+        var sp4 = cone(0.022, 0.08, w.leg ? em : steel);
+        sp4.position.set(0, -0.95, -0.17); sp4.rotation.x = -Math.PI / 2; g.add(sp4);
         break;
       case 'sword': case 'flamesword':
-        add(C(0.03, 0.03, 0.22, wood), 0, -0.1, 0);
-        add(B(0.16, 0.045, 0.05, em), 0, -0.24, 0);
-        add(B(0.075, 0.85, 0.028, em), 0, -0.7, 0);
+        add(C(0.03, 0.03, 0.22, gripMat), 0, -0.1, 0);
+        add(B(0.055, 0.055, 0.055, em), 0, -0.24, 0);
+        add(B(0.18, 0.045, 0.06, em), 0, -0.3, 0);
+        add(B(0.04, 0.08, 0.06, em), -0.09, -0.3, 0);
+        add(B(0.04, 0.08, 0.06, em), 0.09, -0.3, 0);
+        add(B(0.07, 0.78, 0.024, em), 0, -0.72, 0);
+        var tip = cone(0.05, 0.18, em, 4);
+        tip.rotation.y = Math.PI / 4;
+        tip.scale.set(1, 1, 0.34);
+        add(tip, 0, -1.17, 0);
+        add(B(0.02, 0.6, 0.03, steel), 0, -0.7, 0.001);
         break;
       case 'staff': case 'stormstaff':
         add(C(0.04, 0.045, 1.25, w.leg ? em : wood), 0, -0.55, 0);
+        add(new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), em), 0, 0.13, 0);
         if (w.leg) add(B(0.09, 0.2, 0.09, em), 0, -1.12, 0);
         break;
       case 'hammer': case 'seishammer':
         add(C(0.04, 0.045, 0.9, wood), 0, -0.42, 0);
         add(B(0.3, 0.22, 0.2, em), 0, -0.95, 0);
+        add(B(0.32, 0.05, 0.22, steel), 0, -0.845, 0);
+        add(B(0.32, 0.05, 0.22, steel), 0, -1.055, 0);
+        var hs = cone(0.05, 0.16, em);
+        hs.rotation.x = Math.PI / 2;
+        add(hs, 0, -0.95, 0.18);
         break;
       case 'spear': case 'venomsp':
         add(C(0.028, 0.028, 1.7, wood), 0, -0.8, 0);
-        var tip = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.28, 8), em);
-        tip.castShadow = true; tip.position.y = -1.8;
-        g.add(tip);
+        add(C(0.045, 0.045, 0.08, em), 0, -1.64, 0);
+        add(cone(0.06, 0.28, em, 8), 0, -1.8, 0);
         break;
       case 'axe': case 'bersaxe':
         add(C(0.04, 0.045, 0.95, wood), 0, -0.45, 0);
         add(B(0.34, 0.24, 0.05, em), 0.16, -0.92, 0);
+        add(B(0.05, 0.26, 0.056, steel), 0.32, -0.92, 0);
+        var ps = cone(0.04, 0.14, em);
+        ps.rotation.z = Math.PI / 2;
+        add(ps, -0.08, -0.92, 0);
         break;
     }
     if (w.leg) {
@@ -480,33 +509,83 @@ var Scene = (function () {
 
   function makeShieldMesh(key, big) {
     var g = new THREE.Group();
-    var mats = {
-      wooden: new THREE.MeshLambertMaterial({ color: 0x8a6a3a }),
-      iron: new THREE.MeshLambertMaterial({ color: 0x8a94a4 }),
-      tower: new THREE.MeshLambertMaterial({ color: 0x6a5a40 }),
-      aegis: new THREE.MeshLambertMaterial({ color: 0x4a7a5a }),
-    };
-    var m = mats[key] || mats.wooden;
+    var baseCol = key === 'iron' ? 0x8a94a4 : key === 'tower' ? 0x6a5a40 : key === 'aegis' ? 0x4a7a5a : 0x8a6a3a;
+    var trimCol = key === 'iron' ? 0x5a6470 : key === 'tower' ? 0x45361f : key === 'aegis' ? 0x2c4a38 : 0x5a4020;
+    var m = new THREE.MeshLambertMaterial({ color: baseCol });
     m.userData.baseColor = m.color.clone();
+    var trim = new THREE.MeshLambertMaterial({ color: trimCol });
+    trim.userData.baseColor = trim.color.clone();
+    var gold = new THREE.MeshLambertMaterial({ color: 0xd8b04a });
+    gold.userData.baseColor = gold.color.clone();
+    var B = function (ww, hh, dd, mat) {
+      var b = new THREE.Mesh(new THREE.BoxGeometry(ww, hh, dd), mat);
+      if (big) b.castShadow = true;
+      return b;
+    };
+    var C = function (r, hh, mat, seg) {
+      var b = new THREE.Mesh(new THREE.CylinderGeometry(r, r, hh, seg || 18), mat);
+      b.rotation.x = Math.PI / 2;
+      if (big) b.castShadow = true;
+      return b;
+    };
+    function boss(z, r) {
+      var b = C(r, r * 0.9, gold, 10);
+      b.position.z = z;
+      g.add(b);
+    }
     if (big && key === 'tower') {
-      var s = new THREE.Mesh(new THREE.BoxGeometry(0.85, 1.1, 0.1), m);
-      s.castShadow = true;
+      // tall rectangular scutum: frame set back, face, central stripe, boss
+      g.add(B(0.9, 1.15, 0.07, trim));
+      var s = B(0.85, 1.1, 0.1, m);
+      s.position.z = 0.02;
       g.add(s);
+      var stripe = B(0.08, 1.0, 0.02, trim);
+      stripe.position.z = 0.075;
+      g.add(stripe);
+      boss(0.085, 0.1);
     } else if (big) {
-      var s2 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.08, 20), m);
-      s2.rotation.x = Math.PI / 2;
-      s2.castShadow = true;
-      g.add(s2);
+      // round shield: frame ring, face, boss
+      var fr = C(0.52, 0.06, trim, 20);
+      fr.position.z = -0.02;
+      g.add(fr);
+      g.add(C(0.5, 0.08, m, 20));
+      boss(0.045, 0.09);
+    } else if (key === 'aegis') {
+      // first-person: domed tortoise shell — face, raised scute, boss
+      g.add(C(0.34, 0.05, m, 20));
+      var scute = C(0.21, 0.09, m, 16);
+      scute.position.z = 0.055;
+      g.add(scute);
+      var lip = C(0.27, 0.02, trim, 16);
+      lip.position.z = 0.015;
+      g.add(lip);
+      boss(0.1, 0.07);
+    } else if (key === 'tower') {
+      // first-person scutum, same pattern as the big one
+      g.add(B(0.55, 0.68, 0.035, trim));
+      var f1 = B(0.5, 0.62, 0.05, m);
+      f1.position.z = 0.02;
+      g.add(f1);
+      var st1 = B(0.05, 0.56, 0.02, trim);
+      st1.position.z = 0.05;
+      g.add(st1);
+      boss(0.06, 0.07);
     } else {
-      // player's first-person shield
-      var s3 = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.06, 18), m);
-      s3.rotation.x = Math.PI / 2;
-      g.add(s3);
-      var boss = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.09, 10),
-        new THREE.MeshLambertMaterial({ color: 0xd8b04a }));
-      boss.rotation.x = Math.PI / 2;
-      boss.position.z = 0.03;
-      g.add(boss);
+      // first-person wooden / iron: rectangular shield with frame, stripe, boss, rivets
+      g.add(B(0.47, 0.6, 0.03, trim));
+      var f2 = B(0.42, 0.55, 0.045, m);
+      f2.position.z = 0.018;
+      g.add(f2);
+      var st2 = B(0.05, 0.5, 0.02, trim);
+      st2.position.z = 0.048;
+      g.add(st2);
+      boss(0.055, 0.065);
+      var rivets = [[-0.17, 0.22], [0.17, 0.22], [-0.17, -0.22], [0.17, -0.22]];
+      for (var ri = 0; ri < 4; ri++) {
+        var rv = B(0.035, 0.035, 0.014, gold);
+        rv.position.set(rivets[ri][0], rivets[ri][1], 0.05);
+        g.add(rv);
+      }
     }
     return g;
   }
@@ -537,23 +616,28 @@ var Scene = (function () {
     var skin = 0xb08a62;
     var arch = foe.arch;
     var armorKey = foe.armor;
+    // leather sits well below skin tone so armor reads as armor, not a tan slab
     var armorCol = armorKey === 'iron' ? 0x8a94a4 : armorKey === 'dragon' ? 0x4a7a4a
-      : armorKey === 'magic' ? 0x5a4a8a : 0x9a7a4a;
+      : armorKey === 'magic' ? 0x5a4a8a : armorKey === 'leather' ? 0x6e4a28 : 0x9a7a4a;
     var scale = arch === 'brute' ? 1.28 : arch === 'duelist' ? 0.92 : arch === 'wall' ? 1.1 : arch === 'trickster' ? 0.95 : 1.0;
+    var isMage = arch === 'mage';
 
-    // legs
+    // legs + feet
     ['L', 'R'].forEach(function (side) {
       var hip = new THREE.Group();
       hip.position.set(0.16 * (side === 'R' ? 1 : -1), 0.95, 0);
-      var leg = box(0.17, 0.95, 0.22, arch === 'mage' ? 0x4a3a6a : skin);
-      leg.position.y = -0.475;
+      var leg = box(0.17, 0.9, 0.22, isMage ? 0x4a3a6a : skin);
+      leg.position.y = -0.45;
       hip.add(leg);
+      var foot = box(0.2, 0.1, 0.32, 0x3a2a1a);
+      foot.position.set(0, -0.9, 0.05);
+      hip.add(foot);
       E.body.add(hip);
       E.parts['hip' + side] = hip;
     });
 
     // torso (robe for mages, plate otherwise)
-    if (arch === 'mage') {
+    if (isMage) {
       var robe = new THREE.Mesh(
         new THREE.ConeGeometry(0.55, 1.5, 10),
         new THREE.MeshLambertMaterial({ color: 0x4a3a6a, emissive: 0x1a0a2a })
@@ -561,30 +645,51 @@ var Scene = (function () {
       robe.position.y = 1.25;
       robe.castShadow = true;
       E.body.add(robe);
+      // sash cinching the robe
+      var sash = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.36, 0.4, 0.18, 10),
+        new THREE.MeshLambertMaterial({ color: 0x7a5a2a })
+      );
+      sash.position.y = 1.1;
+      sash.castShadow = true;
+      E.body.add(sash);
     } else {
-      var torso = box(0.66, 0.8, 0.36, armorCol);
-      torso.position.y = 1.35;
+      var torsoW = arch === 'brute' ? 0.82 : arch === 'wall' ? 0.74 : 0.66;
+      var pelvis = box(torsoW + 0.04, 0.18, 0.36, 0x4a3020);
+      pelvis.position.y = 1.03;
+      E.body.add(pelvis);
+      var torso = box(torsoW, 0.8, 0.36, armorCol);
+      torso.position.y = 1.44;
       E.body.add(torso);
-      // straps / belt
-      var belt = box(0.7, 0.12, 0.4, 0x4a3020);
-      belt.position.y = 1.02;
-      E.body.add(belt);
       if (armorKey === 'iron' || arch === 'brute' || arch === 'wall') {
-        var chest = box(0.5, 0.4, 0.06, 0xa8b0bc);
-        chest.position.set(0, 1.5, 0.19);
+        var chest = box(torsoW * 0.72, 0.42, 0.07, 0xa8b0bc);
+        chest.position.set(0, 1.54, 0.19);
         E.body.add(chest);
+        var seam = box(0.02, 0.4, 0.02, 0x5a6470);
+        seam.position.set(0, 1.54, 0.23);
+        E.body.add(seam);
+      } else if (armorKey === 'leather') {
+        // diagonal shoulder strap
+        var strap = box(0.1, 0.9, 0.05, 0x4a3020);
+        strap.position.set(0.05, 1.44, 0.2);
+        strap.rotation.z = 0.5;
+        E.body.add(strap);
       }
     }
 
     // shoulders + arms
+    var armW = arch === 'brute' ? 0.2 : 0.15;
     ['L', 'R'].forEach(function (side) {
       var sh = new THREE.Group();
-      sh.position.set(0.42 * (side === 'R' ? 1 : -1), 1.68, 0);
-      var pauldron = box(0.26, 0.2, 0.3, armorCol);
+      sh.position.set(0.44 * (side === 'R' ? 1 : -1), 1.7, 0);
+      var pauldron = box(0.26, 0.2, 0.3, isMage ? 0x4a3a6a : armorCol);
       sh.add(pauldron);
-      var arm = box(0.15, 0.72, 0.19, arch === 'mage' ? 0x4a3a6a : skin);
+      var arm = box(armW, 0.72, 0.19, isMage ? 0x4a3a6a : skin);
       arm.position.y = -0.42;
       sh.add(arm);
+      var fist = box(armW + 0.04, 0.14, 0.16, isMage ? 0x4a3a6a : skin);
+      fist.position.y = -0.82;
+      sh.add(fist);
       E.body.add(sh);
       E.parts['arm' + side] = sh;
     });
@@ -594,30 +699,69 @@ var Scene = (function () {
     head.position.y = 2.06;
     E.body.add(head);
     E.parts.head = head;
-    if (arch === 'mage') {
+    if (isMage) {
       var hat = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.5, 8),
         new THREE.MeshLambertMaterial({ color: 0x5a4a8a }));
       hat.position.y = 2.42;
       hat.castShadow = true;
       E.body.add(hat);
+      // a wizard needs a beard — wide at the jaw, long and pointed,
+      // pushed forward so it catches light instead of sitting in the face-shadow
+      var beard = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.45, 6),
+        new THREE.MeshLambertMaterial({ color: 0xd6d0c0 }));
+      beard.rotation.x = Math.PI;
+      // wide at the jaw, pointed, held just in front of the robe so it reads;
+      // the tip tucks into the robe
+      beard.position.set(0, 1.68, 0.14);
+      beard.castShadow = true;
+      E.body.add(beard);
     } else if (arch === 'trickster') {
-      // the white mask — no helm, so the face (or rather, the not-face) shows
+      // tattered hood over the white mask — no helm, so the not-face shows
+      var hood = box(0.36, 0.22, 0.34, 0x2a2a30);
+      hood.position.set(0, 2.19, 0);
+      E.body.add(hood);
       var mask = box(0.3, 0.3, 0.06, 0xe8e0d0);
-      mask.position.set(0, 2.04, 0.15);
+      mask.position.set(0, 2.02, 0.15);
       E.body.add(mask);
+      var eyeL = box(0.055, 0.03, 0.012, 0x201810);
+      eyeL.position.set(-0.06, 2.07, 0.185);
+      var eyeR = box(0.055, 0.03, 0.012, 0x201810);
+      eyeR.position.set(0.06, 2.07, 0.185);
+      E.body.add(eyeL, eyeR);
+      // ragged cloak trailing behind
+      var cloak = box(0.6, 0.95, 0.06, 0x2a2a30);
+      cloak.position.set(0, 1.35, -0.22);
+      cloak.rotation.x = 0.08;
+      E.body.add(cloak);
     } else {
-      var helm = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-        new THREE.MeshLambertMaterial({ color: armorCol }));
-      helm.position.y = 2.12;
-      helm.castShadow = true;
+      // boxy helm over the skull — shell + brow band, no more floating dome;
+      // bare/leather foes get steel so the helm reads against the tan head
+      var helmCol = armorKey === 'leather' || !armorKey ? 0x8a94a4 : armorCol;
+      var helm = box(0.34, 0.24, 0.34, helmCol);
+      helm.position.y = 2.17;
       E.body.add(helm);
+      var brow = box(0.37, 0.05, 0.37, 0x4a4a3a);
+      brow.position.y = 2.055;
+      E.body.add(brow);
+      if (arch === 'wall') {
+        // full-face visor slit
+        var visor = box(0.26, 0.045, 0.02, 0x2a2a30);
+        visor.position.set(0, 2.15, 0.175);
+        E.body.add(visor);
+      }
+      if (arch === 'duelist') {
+        // a red plume down the crest
+        var plume = box(0.05, 0.05, 0.36, 0xa03030);
+        plume.position.set(0, 2.31, 0);
+        E.body.add(plume);
+      }
       if (foe.champion) {
         var hornGeo = new THREE.ConeGeometry(0.05, 0.3, 6);
         var hornMat = new THREE.MeshLambertMaterial({ color: 0xd8b04a, emissive: 0x4a3000 });
         var h1 = new THREE.Mesh(hornGeo, hornMat);
-        h1.position.set(-0.18, 2.28, 0); h1.rotation.z = 0.5;
+        h1.position.set(-0.19, 2.33, 0); h1.rotation.z = 0.5;
         var h2 = new THREE.Mesh(hornGeo, hornMat);
-        h2.position.set(0.18, 2.28, 0); h2.rotation.z = -0.5;
+        h2.position.set(0.19, 2.33, 0); h2.rotation.z = -0.5;
         E.body.add(h1, h2);
       }
     }
@@ -625,7 +769,7 @@ var Scene = (function () {
     // weapon in right hand
     var wpn = makeWeaponMesh(foe.weapon);
     wpn.position.y = -0.78;
-    wpn.rotation.x = 0.35;
+    wpn.rotation.x = 0.5;
     E.parts.armR.add(wpn);
 
     // shield on left arm
@@ -657,9 +801,11 @@ var Scene = (function () {
 
     var skin = new THREE.MeshLambertMaterial({ color: 0xb08a62 });
 
+    var leather = new THREE.MeshLambertMaterial({ color: 0x6a4a2a });
+
     // right hand + weapon
     handR = new THREE.Group();
-    handR.position.set(0.34, -0.34, -0.78);
+    handR.position.set(0.34, -0.27, -0.78);
     handR.rotation.set(0.25, -0.15, 0.1);
     var fore = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.5), skin);
     fore.position.z = 0.25;
@@ -668,23 +814,30 @@ var Scene = (function () {
     var wk = save.equipped.weapon;
     weaponMesh = makeWeaponMesh(wk);
     weaponMesh.scale.setScalar(wk === 'spear' || wk === 'venomsp' ? 0.7 : 0.55);
-    weaponMesh.position.set(0, 0.02, -0.18);
-    weaponMesh.rotation.x = 1.25; // tip forward, slightly down
+    weaponMesh.position.set(-0.06, 0.02, -0.18);
+    // rest: blade down-forward at ~30° from vertical — held high enough that
+    // the whole steel reads in the lower-right of the frame instead of running
+    // off the bottom edge; the 90° y-spin turns the flat of the blade toward
+    // the player (the enemy's copy keeps its flat facing *him* — same mesh,
+    // opposite viewer)
+    weaponMesh.rotation.set(0.55, Math.PI / 2, 0);
     handR.add(weaponMesh);
     viewGroup.add(handR);
 
     // left hand + shield
     var handL = new THREE.Group();
-    handL.position.set(-0.46, -0.36, -0.82);
-    handL.rotation.set(0.2, 0.2, -0.08);
+    handL.position.set(-0.5, -0.38, -0.72);
+    handL.rotation.set(0.2, 0.32, -0.08);
     var foreL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.45), skin);
     foreL.position.z = 0.22;
-    handL.add(foreL);
+    var wristL = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.17, 0.06), leather);
+    wristL.position.z = 0.08;
+    handL.add(foreL, wristL);
     var sk = save.equipped.shield;
     if (sk) {
       shieldMesh = makeShieldMesh(sk, false);
-      shieldMesh.position.set(0, 0.1, -0.05);
-      shieldMesh.scale.setScalar(sk === 'tower' ? 1.15 : 1);
+      shieldMesh.position.set(0, 0.05, -0.1);
+      shieldMesh.scale.setScalar(sk === 'tower' ? 1.1 : 0.9);
       handL.add(shieldMesh);
     }
     viewGroup.add(handL);
@@ -870,7 +1023,9 @@ var Scene = (function () {
     } else if (E.anim === 'die') {
       var dk = Math.min(1, E.animT / 0.9);
       E.body.rotation.x = -Math.PI / 2 * easeInCubic(dk);
-      E.body.position.y = -0.25 * easeInCubic(dk);
+      // rise to rest ON the sand — the fallen body is only ~0.4 deep, so
+      // sinking it would bury it below the floor and make it vanish
+      E.body.position.y = 0.18 * easeInCubic(dk);
     }
 
     // apply recoil / sidestep to group
@@ -1558,11 +1713,11 @@ var Scene = (function () {
       } else {
         var w = weaponMesh;
         if (w) {
-          var restX = 1.25;
+          var restX = 0.55; // must match the rest pose in buildPlayerView
           if (ha.kind === 'stab') {
             var push = k2 < 0.4 ? easeInCubic(k2 / 0.4) : 1 - easeOutCubic(Math.min(1, (k2 - 0.4) / 0.4));
             handR.position.z = -0.78 - push * 0.55;
-            w.rotation.x = lerp(restX, 1.57, push); // level out into the thrust
+            w.rotation.x = lerp(restX, 1.57, push); // whip the blade forward into the thrust
           } else {
             // slash / swing: raise over the shoulder, then cut down forward
             var windup = ha.kind === 'swing' ? 2.9 : 2.7;

@@ -62,13 +62,29 @@ var combat = (function () {
       spellCd: 0,
     };
     f.maxHp = maxHpOf();
-    f.hp = f.maxHp; // a gladiator always enters the arena at full strength
     f.stamina = STAMINA.max;
     f.maxStamina = STAMINA.max;
     f.dmgBase = WEAPONS[w].dmg * (1 + dmgPctOf() / 100);
     f.reduction = a ? ARMORS[a].reduction : 0;
     f.dodgeBase = clamp(baseDodgeOf() + (a ? ARMORS[a].dodge : 0), 5, 95);
+    f.set = null;
+    applySet(f); // a forged gear set ("bond") grants its passive bonus — player only
+    f.hp = f.maxHp; // a gladiator always enters the arena at full strength (after the bond's +HP)
     return f;
+  }
+
+  // Fold the passive bonus of a forged gear set (weapon + armor "bond") into the
+  // player's fighter. Foes never bond, so this only ever runs from freshFighter().
+  function applySet(f) {
+    var sk = activeSetKey();
+    if (!sk) return;
+    var b = SETS[sk].bonus || {};
+    f.set = sk;
+    if (b.maxHp) f.maxHp += b.maxHp;
+    if (b.dmgFlat) f.dmgBase += b.dmgFlat;
+    if (b.dmgPct) f.dmgBase *= 1 + b.dmgPct / 100;
+    if (b.reduction) f.reduction += b.reduction;
+    if (b.dodge) f.dodgeBase = clamp(f.dodgeBase + b.dodge, 5, 95);
   }
 
   // ---------- enemy generation ----------
@@ -185,7 +201,12 @@ var combat = (function () {
   function actionCost(f, type) {
     if (type === 'attack') {
       var c = STAMINA.attackByTier[WEAPONS[f.weapon].tier];
-      return c != null ? c : STAMINA.attackByTier[2];
+      c = c != null ? c : STAMINA.attackByTier[2];
+      if (f.set) {
+        var b = SETS[f.set].bonus;
+        if (b && b.atkCost) c += b.atkCost; // e.g. the Bare-Knuckle Brawler's swift fists
+      }
+      return Math.max(1, c);
     }
     if (type === 'dodge') return STAMINA.dodge;
     if (type === 'defend') return STAMINA.defend;

@@ -253,6 +253,8 @@ html, body {
 .st-icon.gather { border-color: #b98cff; animation: gatherPulse 1.1s infinite; }
 @keyframes gatherPulse { 50% { box-shadow: 0 0 8px #a06bff; } }
 .st-icon.flask { border-color: #7dffa8; box-shadow: 0 0 6px rgba(125, 255, 168, 0.35); }
+/* an active gear-set "bond" — a warm gold sigil on your status row */
+.st-icon.bond { border-color: #e8c85a; color: #ffd97a; box-shadow: 0 0 6px rgba(232, 200, 90, 0.4); }
 
 /* stamina — the thin blue bar under HP; the foe's is his face */
 .st-bar {
@@ -597,6 +599,12 @@ html, body {
   padding: 3px 10px;
   font-size: 13.5px;
 }
+/* a forged gear-set "bond" chip on the hub — warm gold to mark the active pact */
+.gear-row .hub-bond {
+  border-color: rgba(232, 200, 90, 0.6);
+  color: #ffd97a;
+  box-shadow: 0 0 6px rgba(232, 200, 90, 0.25);
+}
 #next-title { font-size: 13.5px; color: #b99a5e; margin-bottom: 18px; }
 
 .big-btn {
@@ -684,6 +692,10 @@ html, body {
 .shop-card:hover { border-color: rgba(232, 200, 90, 0.6); }
 .shop-card.disabled { opacity: 0.55; }
 .shop-card.arcana.locked { border-style: dashed; }
+/* a forged gear-set "bond" card in the codex — warm gold edge; un-forged = dashed */
+.shop-card.bond { border-color: rgba(232, 200, 90, 0.45); }
+.shop-card.bond.locked { border-style: dashed; border-color: rgba(201, 162, 39, 0.3); }
+.shop-card.bond .bond-msg { color: #ffd97a; }
 .shop-icon { font-size: 34px; width: 46px; text-align: center; flex: none; }
 .shop-body { flex: 1; min-width: 0; }
 .shop-name {
@@ -704,7 +716,9 @@ html, body {
 .shop-desc { font-size: 13px; color: #cbb287; line-height: 1.35; margin-top: 2px; }
 .shop-extra { font-size: 12.5px; color: #9fe8a0; margin-top: 3px; }
 .buy-btn {
-  flex: none;
+  /* 0 1 auto + max-width: a long label (a shattered shield) wraps inside the
+     button instead of starving .shop-body, which has min-width: 0 */
+  flex: 0 1 auto;
   font-family: 'Cinzel', serif;
   font-size: 13px;
   color: var(--ink);
@@ -715,6 +729,9 @@ html, body {
   padding: 8px 12px 6px;
   cursor: pointer;
   min-width: 86px;
+  max-width: 46%;
+  white-space: normal;
+  text-align: center;
 }
 .buy-btn:hover { filter: brightness(1.08); }
 .buy-btn:active { transform: translateY(1px); border-bottom-width: 1px; }

@@ -185,6 +185,7 @@ var Game = (function () {
     if (f.side === 'foe' && f.arch === 'mage' && f.spellCd === 1) box.appendChild(el('span', 'st-icon gather', '✨'));
     if (f.side === 'me' && save.relics.indexOf('flask') !== -1 && !state.flaskUsed) box.appendChild(el('span', 'st-icon flask', '🧪'));
     if (f.shield && f.shieldDur > 0) box.appendChild(el('span', 'st-icon', '🛡️' + f.shieldDur));
+    if (f.side === 'me' && f.set) box.appendChild(el('span', 'st-icon bond', SETS[f.set].icon));
   }
 
   var EVENT_CHIPS = {
@@ -245,6 +246,20 @@ var Game = (function () {
     toast(c.icon, 'ARCANUM DISCOVERED — ' + c.name, c.msg);
   }
 
+  // A gear set ("bond") forges the moment its matching weapon + armor are both
+  // equipped. One-time discovery (like the arcana) — after that it stays forged
+  // and its passive bonus applies on every battle. Idempotent; called from the
+  // Armory equip handlers and again at battle start (covers loaded saves).
+  function checkSetForge() {
+    var sk = activeSetKey();
+    if (!sk || save.discoveredSets.indexOf(sk) !== -1) return;
+    save.discoveredSets.push(sk);
+    persist();
+    var s = SETS[sk];
+    Sfx.discover();
+    toast(s.icon, 'BOND FORGED — ' + s.name, s.msg);
+  }
+
   function noteCombos(res) {
     if (res && res.combos) {
       state.comboCount += res.combos.length; // spectacle: every proc the crowd sees
@@ -274,10 +289,12 @@ var Game = (function () {
     var w = WEAPONS[save.equipped.weapon];
     var relics = '';
     save.relics.forEach(function (k) { relics += '<span>' + RELICS[k].icon + ' ' + RELICS[k].name + '</span>'; });
+    var bond = activeSetKey();
     $('hub-gear').innerHTML =
       '<span>' + w.icon + ' ' + w.name + '</span>' +
       (save.equipped.armor ? '<span>' + ARMORS[save.equipped.armor].icon + ' ' + ARMORS[save.equipped.armor].name + '</span>' : '') +
       (save.equipped.shield ? '<span>' + SHIELDS[save.equipped.shield].icon + ' ' + SHIELDS[save.equipped.shield].name + ' (' + (save.shieldDur[save.equipped.shield] || 0) + ' uses)</span>' : '') +
+      (bond ? '<span class="hub-bond">' + SETS[bond].icon + ' ' + SETS[bond].name + '</span>' : '') +
       relics;
   }
 
@@ -295,7 +312,7 @@ var Game = (function () {
     card.appendChild(body);
     var btn = el('button', 'buy-btn');
     btn.textContent = opts.btn;
-    if (opts.disabled) btn.disabled = true;
+    if (opts.disabled || opts.idle) btn.disabled = true;
     btn.addEventListener('click', opts.onClick);
     card.appendChild(btn);
     return card;
@@ -327,6 +344,7 @@ var Game = (function () {
             if (!owned) { save.coins -= w.cost; save.weapons.push(k); Sfx.buy(); } else Sfx.click();
             save.equipped.weapon = k;
             persist();
+            checkSetForge();
             Scene.buildPlayerView();
             renderShop(); updateHud();
           },
@@ -347,7 +365,9 @@ var Game = (function () {
             if (equipped) return;
             if (!owned) { save.coins -= a.cost; save.armors.push(k); Sfx.buy(); } else Sfx.click();
             save.equipped.armor = k;
-            persist(); renderShop(); updateHud();
+            persist();
+            checkSetForge();
+            renderShop(); updateHud();
           },
         }));
       });
@@ -357,15 +377,19 @@ var Game = (function () {
         var owned = save.shields.indexOf(k) !== -1;
         var dur = owned ? (save.shieldDur[k] || 0) : s.dur;
         var equipped = save.equipped.shield === k;
+        // the tortoise aegis is a per-battle shield: once bought, it reforms whole
+        // before every fight — there is never a "buy a new one" for it
+        var aegisSpent = k === 'aegis' && owned && dur === 0;
         body.appendChild(shopCard({
           icon: s.icon, name: s.name, desc: s.desc,
           extra: owned ? 'remaining uses: ' + dur + ' / ' + s.dur : null,
-          btn: owned ? (dur > 0 ? (equipped ? '✓ equipped' : 'equip') : 'shattered — ' + s.cost + ' 🪙 for a new one') : s.cost + ' 🪙',
+          btn: owned ? (dur > 0 ? (equipped ? '✓ equipped' : 'equip') : (aegisSpent ? 'reforms next battle' : 'rebuild — ' + s.cost + ' 🪙')) : s.cost + ' 🪙',
           disabled: !owned && save.coins < s.cost,
+          idle: aegisSpent,
           onClick: function () {
             if (owned) {
               if (dur > 0) { save.equipped.shield = equipped ? null : k; Sfx.click(); }
-              else if (save.coins >= s.cost) { save.coins -= s.cost; save.shieldDur[k] = s.dur; save.equipped.shield = k; Sfx.buy(); }
+              else if (k !== 'aegis' && save.coins >= s.cost) { save.coins -= s.cost; save.shieldDur[k] = s.dur; save.equipped.shield = k; Sfx.buy(); }
             } else {
               save.coins -= s.cost;
               save.shields.push(k);
@@ -454,6 +478,21 @@ var Game = (function () {
         card.appendChild(b2);
         body.appendChild(card);
       });
+      // bonds: hidden passive pacts between a weapon and an armor. Equip the pair
+      // to forge one — the bonus then applies on every battle.
+      body.appendChild(el('div', 'shop-sep', 'Bonds — hidden pacts between a weapon and an armor. Equip the pair to forge one; it then grants a passive bonus in every battle.'));
+      SET_ORDER.forEach(function (k) {
+        var s = SETS[k];
+        var forged = save.discoveredSets.indexOf(k) !== -1;
+        var card = el('div', 'shop-card bond' + (forged ? '' : ' locked'));
+        card.appendChild(el('div', 'shop-icon', forged ? s.icon : '❓'));
+        var b2 = el('div', 'shop-body');
+        b2.appendChild(el('div', 'shop-name', forged ? s.name : '???'));
+        b2.appendChild(el('div', 'shop-desc', forged ? s.how : 'A hidden bond waits between some weapon and some armor. Find the pair and wear both.'));
+        if (forged) b2.appendChild(el('div', 'shop-desc bond-msg', s.msg));
+        card.appendChild(b2);
+        body.appendChild(card);
+      });
     }
   }
 
@@ -479,6 +518,14 @@ var Game = (function () {
     // seeded battle: re-seed every fight so the same seed replays identically
     if (state.seed !== null) seedRng(state.seed);
 
+    // the tortoise aegis is a per-battle shield: it shatters in the sand and
+    // reforms whole — re-equipping itself — before every fight
+    if (save.shields.indexOf('aegis') !== -1) {
+      var aegisShattered = !save.equipped.shield && (save.shieldDur.aegis || 0) <= 0;
+      save.shieldDur.aegis = SHIELDS.aegis.dur;
+      if (aegisShattered) { save.equipped.shield = 'aegis'; persist(); }
+    }
+
     // a shattered shield can't be brought to the sand
     if (save.equipped.shield && (save.shieldDur[save.equipped.shield] || 0) <= 0) {
       save.equipped.shield = null;
@@ -493,6 +540,7 @@ var Game = (function () {
     state.scrollSnapshot = Object.assign({}, save.scrolls);
 
     combat.reset();
+    checkSetForge(); // safety net: a loaded save may already be wearing a forged-able pair
     var foe = combat.makeEnemy(level);
     if (state.lastStand) foe.hp = Math.max(1, Math.ceil(foe.maxHp * 0.5)); // the last stand: he enters already broken
     combat.setFoe(foe);
@@ -933,7 +981,7 @@ var Game = (function () {
         save.equipped.shield = null;
         persist();
         Scene.buildPlayerView();
-        logLine('💥 Your ' + state.myShieldName + ' SHATTERS!', 'log-foe');
+        logLine('💥 Your ' + state.myShieldName + ' SHATTERS!' + (state.myShield === 'aegis' ? ' 🐢 It crumbles into the sand — the tortoise will rebuild it whole before your next fight.' : ''), 'log-foe');
       }
       for (var c2 = 0; c2 < res.counters.length; c2++) await playCounter(res.counters[c2]);
       await sleep(420);
